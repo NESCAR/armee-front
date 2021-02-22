@@ -4,7 +4,7 @@ import * as config from "./config";
 // 所有前后端接口均在此文件填写，包含参数
 //登录
 export const login = params =>
-  http.postlogin(config.authIp + "/login", {
+  http.postlogin(config.requestIp + "/login", {
     username: params[0],
     password: params[1]
   });
