@@ -39,20 +39,21 @@ export default class App extends Component {
   // 登出
   log_off = () => {
     logoff().then(res => {
-      // if (res.data.status === 1) {
-        if (1) {
+      // todo 
+      // if (res.data.status == 1) {
+      if (res) {
         message.success("注销成功");
-        localStorage.removeItem("token");
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("userID");
-        localStorage.removeItem("user_type");
-        setTimeout(function () {
-          window.location.href = "/";
-        }, 1000);
       } 
       else {
         message.error("注销失败");
       }
+      localStorage.removeItem("token");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("userID");
+      localStorage.removeItem("user_type");
+      setTimeout(function () {
+        window.location.href = "/";
+      }, 1000);
     });
   }
   render() {
