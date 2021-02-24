@@ -80,6 +80,23 @@ export default {
       timeout: 10000,
       headers: {
         // access_token: 'Bearer ' + '4e59536e-5617-47a4-b786-f253eda3a410'
+        // "Origin": "http://localhost:3000",
+        // "Authorization": "Bearer " + data.access_token
+      }
+    }).then(response => {
+      return checkStatus(response);
+    });
+  },
+  post_plus(url, access_token, carQueryParam, adata) {
+    return axios({
+      method: "post",
+      url,
+      data: JSON.stringify(carQueryParam),
+      timeout: 10000,
+      headers: {
+        // access_token: 'Bearer ' + '4e59536e-5617-47a4-b786-f253eda3a410'
+        "Authorization": "Bearer " + access_token,
+        "Content-Type": "application/json;charset=utf-8"
       }
     }).then(response => {
       return checkStatus(response);
@@ -93,7 +110,7 @@ export default {
       timeout: 50000,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "Authorization": `Basic d2ViQXBwOndlYkFwcA==`
+        "Authorization": `Basic d2ViX2FwcGxpY2F0aW9uOndlYl9hcHBsaWNhdGlvbl8xMjM0NTY=`
       }
     }).then(response => {
       return checkStatus(response);

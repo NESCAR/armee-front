@@ -144,10 +144,11 @@ class App extends React.Component {
   componentDidMount() {
     // 获得汽车列表数据并整型数组
     queryDevice().then(res => {
+      console.log(res);
       if (res.status === 201 || res.status === 200) {
         let nodeInfoTableDataSource = [];
         // response.forEach(element => {
-        res.data.forEach(element => {
+        res.data.data.forEach(element => {
           let obj={};
           obj.deviceId = element.gid;
           nodeInfoTableDataSource.push(obj);

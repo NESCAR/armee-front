@@ -39,7 +39,8 @@ export default class App extends Component {
   // 登出
   log_off = () => {
     logoff().then(res => {
-      if (res.data.status === 1) {
+      // if (res.data.status === 1) {
+        if (1) {
         message.success("注销成功");
         localStorage.removeItem("token");
         localStorage.removeItem("access_token");
@@ -72,7 +73,7 @@ export default class App extends Component {
                 <span>首页</span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="/app/carControl" style={{ display: (role === 'ADMIN' || role == 'SUPERADMIN') ? 'block' : 'none'}}>
+            <Menu.Item key="/app/carControl" style={{ display: (role === 'ROLE_ADMIN' || role == 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}>
               <Link to="/app/carControl">
                 <Icon type="setting" />
                 <span>汽车控制</span>
@@ -85,7 +86,7 @@ export default class App extends Component {
                   <span>汽车信息</span>
                   </span>
               }
-            style={{ display: (role === 'ADMIN' || role == 'SUPERADMIN') ? 'block' : 'none'}}> 
+            style={{ display: (role === 'ROLE_ADMIN' || role == 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}> 
               <Menu.Item key="/app/carInfo/data">
                 <Link to="/app/carInfo/data" >
                   <span>汽车信息</span>
@@ -105,7 +106,7 @@ export default class App extends Component {
                   <span>用户管理</span>
                 </span>
               }
-            style={{ display: (role === 'SUPERADMIN') ? 'block' : 'none' }}>
+            style={{ display: (role === 'ROLE_SUPER_ADMIN') ? 'block' : 'none' }}>
             <Menu.Item key="/app/user/driver" > 
               <Link to="/app/user/driver">
                 <span>司机</span>

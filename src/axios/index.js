@@ -4,14 +4,15 @@ import * as config from "./config";
 // 所有前后端接口均在此文件填写，包含参数
 //登录
 export const login = params =>
-  http.postlogin(config.requestIp + "/login", {
+  http.postlogin(config.authIp + "/oauth/token", {
+    grant_type: "password",
     username: params[0],
     password: params[1]
   });
 
 //退出
 export const logoff = params =>
-  http.postlogoff(config.requestIp + "/oauth/token?token=" + localStorage.getItem('access_token'), {
+  http.postlogoff(config.authIp + "/oauth/token?token=" + localStorage.getItem('access_token'), {
 
   });
 
@@ -54,10 +55,13 @@ export const queryDevice = params =>
 
 //查询汽车时序数据
 export const queryTsData = params =>
-  http.post(config.requestIp + "/carInfo/queryTsData", {
-    access_token: localStorage.getItem('access_token'),
-    carQueryParam: params[0]
-  });
+     http.post_plus(config.requestIp + "/carInfo/queryTsData", 
+        localStorage.getItem("access_token"),
+        params
+     )
+  // http.post(config.requestIp + "/carInfo/queryTsData", {
+  //   access_token: localStorage.getItem('access_token')
+  // });
 
 //更新汽车信息
 export const updateDevice = params =>

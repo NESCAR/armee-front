@@ -27,14 +27,15 @@ export default class SignIn extends Component {
     }
     // 登录函数
     login([this.state.userID, this.state.password]).then(res => {
-      if (res.data.status === 1) {
+      if (res.data.refresh_token) {
         message.success("登陆成功");
-        localStorage.setItem("token", res.data.data.refresh_token);
-        localStorage.setItem("access_token", res.data.data.access_token);
+        localStorage.setItem("token", res.data.refresh_token);
+        localStorage.setItem("access_token", res.data.access_token);
         localStorage.setItem("userID", this.state.userID);
-        localStorage.setItem("user_type", res.data.data.userType[0].value);
+        localStorage.setItem("user_type", res.data.authorities[0].authority);
+        // console.log(res);
         setTimeout(function () {
-          window.location.href = "/app/otaHistory";
+          window.location.href = "/app";
         }, 1000);
       } else {
         message.error("用户名或密码错误");

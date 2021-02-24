@@ -28,6 +28,7 @@ import {
   queryTsData,
 } from "../../axios";
 import "./queryTsData.css";
+import qs from "qs";
 // import BMap  from 'BMap';
 
 const { Content } = Layout;
@@ -217,11 +218,12 @@ class App extends React.Component {
     carQueryParam.tags.terminalId="12312";
     carQueryParam.st=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(0)+":"+add(0)+":"+add(0)+"."+addmilli(0)+"+08:00";
     carQueryParam.et=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(23)+":"+add(59)+":"+add(59)+"."+addmilli(999)+"+08:00";
-    // console.log(carQueryParam);
+    console.log(qs.stringify(carQueryParam));
     queryTsData(carQueryParam).then(res => {
       if (res.status === 200 || res.status === 201){
         length = 0;
-        res.data.results[0].series[0].values.forEach(element => {
+        console.log(res)
+        res.data.data.results[0].series[0].values.forEach(element => {
         // response.data.results[0].series[0].values.forEach(element => {
           data[length]=new Array();
           data[length] = element;
@@ -298,7 +300,7 @@ class App extends React.Component {
       carQueryParam.tags.terminalId=this.state.inputDeviceTerminalId;
       carQueryParam.st=this.state.inputDeviceSt.getFullYear()+"-"+add((this.state.inputDeviceSt.getMonth()+1))+"-"+add(this.state.inputDeviceSt.getDate())+"T"+add(this.state.inputDeviceSt.getHours())+":"+add(this.state.inputDeviceSt.getMinutes())+":"+add(this.state.inputDeviceSt.getSeconds())+"."+addmilli(this.state.inputDeviceSt.getMilliseconds())+"+08:00";
       carQueryParam.et=this.state.inputDeviceEt.getFullYear()+"-"+add((this.state.inputDeviceEt.getMonth()+1))+"-"+add(this.state.inputDeviceEt.getDate())+"T"+add(this.state.inputDeviceEt.getHours())+":"+add(this.state.inputDeviceEt.getMinutes())+":"+add(this.state.inputDeviceEt.getSeconds())+"."+addmilli(this.state.inputDeviceEt.getMilliseconds())+"+08:00";
-      //console.log(carQueryParam);
+      console.log("car query param : " + carQueryParam);
       queryTsData(carQueryParam).then(res => {
         if (res.status === 200 || res.status === 201){
           data=new Array();

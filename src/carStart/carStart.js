@@ -25,15 +25,15 @@ class App extends React.Component {
           <Content style={{ margin: "16px 16px" }} id="NodeManage">
             <Card title="瑞立-OTA信息管理平台" id="hello">
               <div style={{ fontSize: 15 }}>
-                  您好，{localStorage.getItem('userId')}，您是{localStorage.getItem('user_type')}
+                  您好，{localStorage.getItem('userID')}，您是{localStorage.getItem('user_type')}
               </div>
-              <div style={{ fontSize: 15, display: (role === 'DRIVER') ? 'block' : 'none'}}>
+              <div style={{ fontSize: 15, display: (role === 'ROLE_COMMON_STAFF') ? 'block' : 'none'}}>
                   很抱歉，您没有操作权限。
               </div>
-              <div style={{ fontSize: 15, display: (role === 'ADMIN') ? 'block' : 'none'}}>
+              <div style={{ fontSize: 15, display: (role === 'ROLE_ADMIN') ? 'block' : 'none'}}>
                   您的权限为汽车控制、汽车信息。
               </div>
-              <div style={{ fontSize: 15, display: (role === 'SUPERADMIN') ? 'block' : 'none'}}>
+              <div style={{ fontSize: 15, display: (role === 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}>
                   您的权限为汽车控制、汽车信息、用户管理。
               </div>
             </Card>

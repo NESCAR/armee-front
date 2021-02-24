@@ -132,7 +132,7 @@ class App extends React.Component {
     queryDevice().then(res => {
         if (res.status === 200 || res.status === 201) {
           let deviceInfoTableDataSource = [];
-          res.data.forEach(element => {
+          res.data.data.forEach(element => {
           // response.forEach(element => {
             let obj = {};
             obj.gid = element.gid;
