@@ -223,53 +223,57 @@ class App extends React.Component {
       if (res.status === 200 || res.status === 201){
         length = 0;
         console.log(res)
-        res.data.data.results[0].series[0].values.forEach(element => {
-        // response.data.results[0].series[0].values.forEach(element => {
-          data[length]=new Array();
-          data[length] = element;
-          objSpeed[length]=new Object();
-          objSpeed[length].speed = element[5];
-          objSpeed[length].time = element[4];
-          location[length]=new Object();
-          if (element[0] === 0){
-            location[length].direction="正北";
-          }
-          else if(element[0] === 90){
-            location[length].direction="正东";
-          }
-          else if (element[0] === 180){
-            location[length].direction="正南";
-          }
-          else if (element[0] === 270){
-            location[length].direction="正西";
-          }
-          else if (element[0] > 0 && element[0] < 90){
-            location[length].direction="北偏东"+element[0]+"°";
-          }
-          else if (element[0] > 90 && element[0] < 180){
-            location[length].direction="南偏东"+(180-element[0])+"°";
-          }
-          else if (element[0] > 180 && element[0] < 270){
-            location[length].direction="南偏西"+(element[0]-180)+"°";
-          }
-          else {
-            location[length].direction="北偏西"+(360-element[0])+"°";
-          }
-          location[length].height = element[1];
-          location[length].lat = element[2]*1.0/1000000;
-          location[length].lng = element[3]*1.0/1000000;
-          location[length].time = element[4];
-          historicalLocation[length]=new Object();
-          historicalLocation[length].lat=element[2]*1.0/1000000;
-          historicalLocation[length].lng=element[3]*1.0/1000000;
-          length++;
-        });
-      length--;
-      this.setState({accOnlineState : "" + (data[length][6] & 1) === "1" ? "开" : "关"});
-      this.setState({carLoadState : "" + (data[length][6] & 768) === "768" ? "满载" : ("" + (data[length][6] & 768) === "0" ? "空载" : "半载")});
-      this.setState({oilWayState : "" + (data[length][6] & 1024) === "1024" ? "正常" : "断开"});
-      this.setState({elecWayState: "" + (data[length][6] & 2048) === "2048" ? "正常" : "断开"});
-      this.setState({carDoorState : "" + (data[length][6] & 4096) === "4096" ? "加锁" : "解锁"});
+        if (res.data.data.results[0].series === null) {
+          message.warn("Warning, 未查询到时序数据"); 
+        } else {
+          res.data.data.results[0].series[0].values.forEach(element => {
+            // response.data.results[0].series[0].values.forEach(element => {
+              data[length]=new Array();
+              data[length] = element;
+              objSpeed[length]=new Object();
+              objSpeed[length].speed = element[5];
+              objSpeed[length].time = element[4];
+              location[length]=new Object();
+              if (element[0] === 0){
+                location[length].direction="正北";
+              }
+              else if(element[0] === 90){
+                location[length].direction="正东";
+              }
+              else if (element[0] === 180){
+                location[length].direction="正南";
+              }
+              else if (element[0] === 270){
+                location[length].direction="正西";
+              }
+              else if (element[0] > 0 && element[0] < 90){
+                location[length].direction="北偏东"+element[0]+"°";
+              }
+              else if (element[0] > 90 && element[0] < 180){
+                location[length].direction="南偏东"+(180-element[0])+"°";
+              }
+              else if (element[0] > 180 && element[0] < 270){
+                location[length].direction="南偏西"+(element[0]-180)+"°";
+              }
+              else {
+                location[length].direction="北偏西"+(360-element[0])+"°";
+              }
+              location[length].height = element[1];
+              location[length].lat = element[2]*1.0/1000000;
+              location[length].lng = element[3]*1.0/1000000;
+              location[length].time = element[4];
+              historicalLocation[length]=new Object();
+              historicalLocation[length].lat=element[2]*1.0/1000000;
+              historicalLocation[length].lng=element[3]*1.0/1000000;
+              length++;
+            });
+            length--;
+            this.setState({accOnlineState : "" + (data[length][6] & 1) === "1" ? "开" : "关"});
+            this.setState({carLoadState : "" + (data[length][6] & 768) === "768" ? "满载" : ("" + (data[length][6] & 768) === "0" ? "空载" : "半载")});
+            this.setState({oilWayState : "" + (data[length][6] & 1024) === "1024" ? "正常" : "断开"});
+            this.setState({elecWayState: "" + (data[length][6] & 2048) === "2048" ? "正常" : "断开"});
+            this.setState({carDoorState : "" + (data[length][6] & 4096) === "4096" ? "加锁" : "解锁"});
+        }
       }
       else if (res.status === 401){
         message.error("Unauthorized, 获取时序数据失败");
