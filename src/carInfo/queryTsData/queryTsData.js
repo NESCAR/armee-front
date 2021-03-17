@@ -215,56 +215,56 @@ class App extends React.Component {
 
   componentDidMount() {
     let date = new Date();
-    carQueryParam.tags.terminalId="12312";
+    carQueryParam.tags.terminalId="768901005626";
     carQueryParam.st=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(0)+":"+add(0)+":"+add(0)+"."+addmilli(0)+"+08:00";
     carQueryParam.et=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(23)+":"+add(59)+":"+add(59)+"."+addmilli(999)+"+08:00";
     console.log(qs.stringify(carQueryParam));
     queryTsData(carQueryParam).then(res => {
       if (res.status === 200 || res.status === 201){
         length = 0;
-        console.log(res)
         if (res.data.data.results[0].series === null) {
           message.warn("Warning, 未查询到时序数据"); 
         } else {
+          console.log(res)
           res.data.data.results[0].series[0].values.forEach(element => {
             // response.data.results[0].series[0].values.forEach(element => {
               data[length]=new Array();
               data[length] = element;
               objSpeed[length]=new Object();
-              objSpeed[length].speed = element[5];
-              objSpeed[length].time = element[4];
+              objSpeed[length].speed = element[4];
+              objSpeed[length].time = element[0];
               location[length]=new Object();
-              if (element[0] === 0){
+              if (element[5] === 0){
                 location[length].direction="正北";
               }
-              else if(element[0] === 90){
+              else if(element[5] === 90){
                 location[length].direction="正东";
               }
-              else if (element[0] === 180){
+              else if (element[5] === 180){
                 location[length].direction="正南";
               }
-              else if (element[0] === 270){
+              else if (element[5] === 270){
                 location[length].direction="正西";
               }
-              else if (element[0] > 0 && element[0] < 90){
+              else if (element[5] > 0 && element[5] < 90){
                 location[length].direction="北偏东"+element[0]+"°";
               }
-              else if (element[0] > 90 && element[0] < 180){
-                location[length].direction="南偏东"+(180-element[0])+"°";
+              else if (element[5] > 90 && element[5] < 180){
+                location[length].direction="南偏东"+(180-element[5])+"°";
               }
-              else if (element[0] > 180 && element[0] < 270){
-                location[length].direction="南偏西"+(element[0]-180)+"°";
+              else if (element[5] > 180 && element[5] < 270){
+                location[length].direction="南偏西"+(element[5]-180)+"°";
               }
               else {
                 location[length].direction="北偏西"+(360-element[0])+"°";
               }
               location[length].height = element[1];
-              location[length].lat = element[2]*1.0/1000000;
-              location[length].lng = element[3]*1.0/1000000;
-              location[length].time = element[4];
+              location[length].lat = element[3]*1.0;
+              location[length].lng = element[1]*1.0;
+              location[length].time = element[0];
               historicalLocation[length]=new Object();
-              historicalLocation[length].lat=element[2]*1.0/1000000;
-              historicalLocation[length].lng=element[3]*1.0/1000000;
+              historicalLocation[length].lat=element[3]*1.0;
+              historicalLocation[length].lng=element[1]*1.0;
               length++;
             });
             length--;
@@ -345,12 +345,12 @@ class App extends React.Component {
               location[length].direction="北偏西"+(360-element[0])+"°";
             }
             location[length].height = element[1];
-            location[length].lat = element[2]*1.0/1000000;
-            location[length].lng = element[3]*1.0/1000000;
+            location[length].lat = element[2]*1.0;
+            location[length].lng = element[3]*1.0;
             location[length].time = element[4];
             historicalLocation[length]=new Object();
-            historicalLocation[length].lat=element[2]*1.0/1000000;
-            historicalLocation[length].lng=element[3]*1.0/1000000;
+            historicalLocation[length].lat=element[2]*1.0;
+            historicalLocation[length].lng=element[3]*1.0;
             length++;
           });
         length--;
