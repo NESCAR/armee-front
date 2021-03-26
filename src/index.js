@@ -27,7 +27,7 @@ function requireAuthentication(Component) {
       //判断缓存是否有token
       const access_token = localStorage.getItem("access_token");
 
-      const reg = access_token ? true : null;
+      const reg = true; //access_token ? true : null;
       if (reg) {
         //有token，重置flag
         this.setState({ flag: true });
@@ -71,7 +71,7 @@ function SignupAuthentication(Component) {
     checkAuth() {
       //判断缓存是否有token
       const access_token = localStorage.getItem("access_token");
-      const reg = access_token ? true : null;
+      const reg = true; //access_token ? true : null;
       if (!reg) {
         //没有token转登录接口
         this.setState({ flag: true });
