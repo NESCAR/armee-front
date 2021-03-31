@@ -87,7 +87,7 @@ export default class App extends Component {
                   <span>汽车信息</span>
                   </span>
               }>
-            {*/style={{ display: (role === 'ROLE_ADMIN' || role == 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}> */｝
+            {/* style={{ display: (role === 'ROLE_ADMIN' || role == 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}>  */}
               <Menu.Item key="/app/carInfo/data">
                 <Link to="/app/carInfo/data" >
                   <span>汽车信息</span>
@@ -107,7 +107,7 @@ export default class App extends Component {
                   <span>用户管理</span>
                 </span>
               }>
-            ｛ */ style={{ display: (role === 'ROLE_SUPER_ADMIN') ? 'block' : 'none' }}> */｝
+            {/* style={{ display: (role === 'ROLE_SUPER_ADMIN') ? 'block' : 'none' }}>  */}
             <Menu.Item key="/app/user/driver" > 
               <Link to="/app/user/driver">
                 <span>司机</span>
