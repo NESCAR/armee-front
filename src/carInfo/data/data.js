@@ -130,9 +130,13 @@ class App extends React.Component {
   componentDidMount() {
     // 获取汽车数据
     queryDevice().then(res => {
+        if (res === undefined){
+        message.error("The returned data was not retrieved!");
+      }
+      else{
         if (res.status === 200 || res.status === 201) {
           let deviceInfoTableDataSource = [];
-          res.data.data.forEach(element => {
+          res.data.forEach(element => {
           // response.forEach(element => {
             let obj = {};
             obj.gid = element.gid;
@@ -157,7 +161,8 @@ class App extends React.Component {
         else {
           message.error("Not Found, 获取汽车列表失败");
         }
-       });
+       }
+      })
     }
 
     // 添加汽车窗口可见
@@ -196,47 +201,58 @@ class App extends React.Component {
           lockStatus: parseInt(this.state.addDeviceLockStatus),
           psw: this.state.addDevicePsw
         }).then(res => {
-          if (res.status === 201 || res.status === 200) {
-            message.success("添加成功！");
-            queryDevice().then(res => {
-              if (res.status === 201 || res.status === 200) {
-                let deviceInfoTableDataSource = [];
-                res.data.forEach(element => {
-                  let obj = {};
-                  obj.gid = element.gid;
-                  obj.driverGid = element.driverGid;
-                  obj.imei = element.imei;
-                  obj.imsi = element.imsi;
-                  obj.licensePlate = element.licensePlate;
-                  obj.lockStartTime = element.lockStartTime;
-                  obj.lockEndTime = element.lockEndTime;
-                  obj.lockStatus = element.lockStatus;  
-                  deviceInfoTableDataSource.push(obj);
-                });
-                this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
-              } 
-              else if (res.status === 401){
-                message.error("Unauthorized, 获取汽车列表失败");
-              }
-              else if (res.status === 403){
-                message.error("Forbidden, 获取汽车列表失败");
-              }
-              else {
-                message.error("Not Found, 获取汽车列表失败");
-              }
-            });
-          } 
-          else if (res.status === 401){
-            message.error("Unauthorized, 添加失败");
+          if (res === undefined){
+            message.error("The returned data was not retrieved!");
             return;
           }
-          else if (res.status === 403){
-            message.error("Forbidden, 添加失败"); 
-            return;
-          }
-          else {
-            message.error("Not Found, 添加失败");
-            return;
+          else{
+            if (res.status === 201 || res.status === 200) {
+              message.success("添加成功！");
+              queryDevice().then(res => {
+                if (res === undefined){
+                  message.error("The returned data was not retrieved!");
+                }
+                else{
+                  if (res.status === 201 || res.status === 200) {
+                    let deviceInfoTableDataSource = [];
+                    res.data.forEach(element => {
+                      let obj = {};
+                      obj.gid = element.gid;
+                      obj.driverGid = element.driverGid;
+                      obj.imei = element.imei;
+                      obj.imsi = element.imsi;
+                      obj.licensePlate = element.licensePlate;
+                      obj.lockStartTime = element.lockStartTime;
+                      obj.lockEndTime = element.lockEndTime;
+                      obj.lockStatus = element.lockStatus;  
+                      deviceInfoTableDataSource.push(obj);
+                    });
+                    this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
+                  } 
+                  else if (res.status === 401){
+                    message.error("Unauthorized, 获取汽车列表失败");
+                  }
+                  else if (res.status === 403){
+                    message.error("Forbidden, 获取汽车列表失败");
+                  }
+                  else {
+                    message.error("Not Found, 获取汽车列表失败");
+                  }
+                }
+              });
+            } 
+            else if (res.status === 401){
+              message.error("Unauthorized, 添加失败");
+              return;
+            }
+            else if (res.status === 403){
+              message.error("Forbidden, 添加失败"); 
+              return;
+            }
+            else {
+              message.error("Not Found, 添加失败");
+              return;
+            }
           }
           this.setState({ addDeviceModalVisible: false });
           this.setState({
@@ -348,46 +364,57 @@ class App extends React.Component {
         }
         //console.log(data);
         updateDevice(data).then(res => {
-          if (res.status === 201 || res.status === 200) {
-            message.success("更新成功！");
-            queryDevice().then(res => {
-              if (res.status === 201 || res.status === 200) {
-                let deviceInfoTableDataSource = [];
-                res.data.forEach(element => {
-                  let obj = {};
-                  obj.gid = element.gid;
-                  obj.driverGid = element.driverGid;
-                  obj.imei = element.imei;
-                  obj.imsi = element.imsi;
-                  obj.licensePlate = element.licensePlate;
-                  obj.lockStartTime = element.lockStartTime;
-                  obj.lockEndTime = element.lockEndTime;
-                  obj.lockStatus = element.lockStatus;  
-                  deviceInfoTableDataSource.push(obj);
-                });
-                this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
-              } 
-              else if (res.status === 401){
-                message.error("Unauthorized, 获取汽车列表失败");
-              }
-              else if (res.status === 403){
-                message.error("Forbidden, 获取汽车列表失败");
-              }
-              else {
-                message.error("Not Found, 获取汽车列表失败");
-              }
-            });
-          } else if (res.status === 401){
-            message.error("Unauthorized, 更新失败");
-            return;
-          }
-          else if (res.status === 403){
-            message.error("Forbidden, 更新失败");
+          if (res === undefined){
+            message.error("The returned data was not retrieved!");
             return;
           }
           else {
-            message.error("Not Found, 更新失败");
-            return;
+            if (res.status === 201 || res.status === 200) {
+              message.success("更新成功！");
+              queryDevice().then(res => {
+                if (res === undefined){
+                  message.error("The returned data was not retrieved!");
+                }
+                else{
+                  if (res.status === 201 || res.status === 200) {
+                    let deviceInfoTableDataSource = [];
+                    res.data.forEach(element => {
+                      let obj = {};
+                      obj.gid = element.gid;
+                      obj.driverGid = element.driverGid;
+                      obj.imei = element.imei;
+                      obj.imsi = element.imsi;
+                      obj.licensePlate = element.licensePlate;
+                      obj.lockStartTime = element.lockStartTime;
+                      obj.lockEndTime = element.lockEndTime;
+                      obj.lockStatus = element.lockStatus;  
+                      deviceInfoTableDataSource.push(obj);
+                    });
+                    this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
+                  } 
+                  else if (res.status === 401){
+                    message.error("Unauthorized, 获取汽车列表失败");
+                  }
+                  else if (res.status === 403){
+                    message.error("Forbidden, 获取汽车列表失败");
+                  }
+                  else {
+                    message.error("Not Found, 获取汽车列表失败");
+                  }
+                }
+              });
+            } else if (res.status === 401){
+              message.error("Unauthorized, 更新失败");
+              return;
+            }
+            else if (res.status === 403){
+              message.error("Forbidden, 更新失败");
+              return;
+            }
+            else {
+              message.error("Not Found, 更新失败");
+              return;
+            }
           }
           this.setState({ updateDeviceModalVisible: false });
           this.setState({
@@ -435,47 +462,58 @@ class App extends React.Component {
         return;
       }
       deleteDevice([this.state.deviceIdSelected[0]]).then(res => {
-        if (res.status === 200 || res.status === 201) {
-          message.success("删除成功！");
-          queryDevice().then(res => {
-            if (res.status === 200 || res.status === 201) {
-              let deviceInfoTableDataSource = [];
-              res.data.forEach(element => {
-                let obj = {};
-                obj.gid = element.gid;
-                obj.driverGid = element.driverGid;
-                obj.imei = element.imei;
-                obj.imsi = element.imsi;
-                obj.licensePlate = element.licensePlate;
-                obj.lockStartTime = element.lockStartTime;
-                obj.lockEndTime = element.lockEndTime;
-                obj.lockStatus = element.lockStatus;  
-                deviceInfoTableDataSource.push(obj);
-              });
-              this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
-            } 
-            else if (res.status === 401) {
-              message.error("Unauthorized, 获取汽车列表失败");
-            }
-            else if (res.status === 403) {
-              message.error("Forbidden, 获取汽车列表失败");
-            }
-            else {
-              message.error("Not Found, 获取汽车列表失败");
-            }
-          });
-        } 
-        else if (res.status === 401) {
-          message.error("Unauthorized, 删除失败");
-          return;
-        }
-        else if (res.status === 403) {
-          message.error("Forbidden, 删除失败");
+        if (res === undefined){
+          message.error("The returned data was not retrieved!");
           return;
         }
         else {
-          message.error("Not Found, 删除失败");
-          return;
+          if (res.status === 200 || res.status === 201) {
+            message.success("删除成功！");
+            queryDevice().then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else {
+                if (res.status === 200 || res.status === 201) {
+                  let deviceInfoTableDataSource = [];
+                  res.data.forEach(element => {
+                    let obj = {};
+                    obj.gid = element.gid;
+                    obj.driverGid = element.driverGid;
+                    obj.imei = element.imei;
+                    obj.imsi = element.imsi;
+                    obj.licensePlate = element.licensePlate;
+                    obj.lockStartTime = element.lockStartTime;
+                    obj.lockEndTime = element.lockEndTime;
+                    obj.lockStatus = element.lockStatus;  
+                    deviceInfoTableDataSource.push(obj);
+                  });
+                  this.setState({ deviceInfoTableDataSource: deviceInfoTableDataSource });
+                } 
+                else if (res.status === 401) {
+                  message.error("Unauthorized, 获取汽车列表失败");
+                }
+                else if (res.status === 403) {
+                  message.error("Forbidden, 获取汽车列表失败");
+                }
+                else {
+                  message.error("Not Found, 获取汽车列表失败");
+                }
+              }
+            });
+          } 
+          else if (res.status === 401) {
+            message.error("Unauthorized, 删除失败");
+            return;
+          }
+          else if (res.status === 403) {
+            message.error("Forbidden, 删除失败");
+            return;
+          }
+          else {
+            message.error("Not Found, 删除失败");
+            return;
+          }
         }
         this.setState({ deleteNodeModalVisible: false });
       });

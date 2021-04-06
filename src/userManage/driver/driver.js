@@ -159,35 +159,40 @@ class App extends React.Component {
   componentDidMount() {
     // 获取驾驶员数据
     queryDriver().then(res => {
-      if (res.status === 200 || res.status === 201) {
-        let driverInfoTableDataSource = [];
-        res.data.data.forEach(element => {
-          // response.forEach(element => {
-          let obj = {};
-          obj.no = element.no;
-          obj.name = element.name;
-          obj.telArea = element.telArea;
-          obj.tel = element.tel;
-          obj.realName = element.realName;
-          obj.email = element.email;
-          obj.authority = element.authority;
-          obj.icCode = element.icCode;
-          obj.password = element.password;
-          obj.position = element.position;
-          obj.staffGid = element.staffGid;
-          driverInfoTableDataSource.push(obj);
-         });
-         this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
-      } 
-      else if (res.status === 401){
-        message.error("Unauthorized, 获取驾驶员数据失败");
-        return;
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
       }
-      else if (res.status === 403){
-        message.error("Forbidden, 获取驾驶员数据失败"); 
-      }
-      else {
-        message.error("Not Found, 获取驾驶员数据失败");
+      else{
+        if (res.status === 200 || res.status === 201) {
+          let driverInfoTableDataSource = [];
+          res.data.forEach(element => {
+            // response.forEach(element => {
+            let obj = {};
+            obj.no = element.no;
+            obj.name = element.name;
+            obj.telArea = element.telArea;
+            obj.tel = element.tel;
+            obj.realName = element.realName;
+            obj.email = element.email;
+            obj.authority = element.authority;
+            obj.icCode = element.icCode;
+            obj.password = element.password;
+            obj.position = element.position;
+            obj.staffGid = element.staffGid;
+            driverInfoTableDataSource.push(obj);
+          });
+          this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
+        } 
+        else if (res.status === 401){
+          message.error("Unauthorized, 获取驾驶员数据失败");
+          return;
+        }
+        else if (res.status === 403){
+          message.error("Forbidden, 获取驾驶员数据失败"); 
+        }
+        else {
+          message.error("Not Found, 获取驾驶员数据失败");
+        }
       }
     });
   }
@@ -227,50 +232,62 @@ class App extends React.Component {
         tel: this.state.addDriverTel,
         telArea: this.state.addDriverTelArea
       }).then(res => {
-        if (res.status === 201 || res.status === 200) {
-          message.success("添加成功！");
-          queryDriver().then(res => {
-            if (res.status === 201 || res.status === 200) {
-              let driverInfoTableDataSource = [];
-              res.data.forEach(element => {
-                let obj = {};
-                obj.no = element.no;
-                obj.name = element.name;
-                obj.telArea = element.telArea;
-                obj.tel = element.tel;
-                obj.realName = element.realName;
-                obj.email = element.email;
-                obj.authority = element.authority;
-                obj.icCode = element.icCode;
-                obj.password = element.password;
-                obj.position = element.position;
-                obj.staffGid = element.staffGid;
-                driverInfoTableDataSource.push(obj);
-              });
-              this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
-            } 
-            else if (res.status === 401){
-              message.error("Unauthorized, 获取驾驶员数据失败");
+        if (res === undefined){
+          message.error("The returned data was not retrieved!");
+          return;
+        }
+        else{
+          if (res.status === 201 || res.status === 200) {
+            message.success("添加成功！");
+            queryDriver().then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else{
+                if (res.status === 201 || res.status === 200) {
+                  let driverInfoTableDataSource = [];
+                  res.data.forEach(element => {
+                    let obj = {};
+                    obj.no = element.no;
+                    obj.name = element.name;
+                    obj.telArea = element.telArea;
+                    obj.tel = element.tel;
+                    obj.realName = element.realName;
+                    obj.email = element.email;
+                    obj.authority = element.authority;
+                    obj.icCode = element.icCode;
+                    obj.password = element.password;
+                    obj.position = element.position;
+                    obj.staffGid = element.staffGid;
+                    driverInfoTableDataSource.push(obj);
+                  });
+                  this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
+                } 
+                else if (res.status === 401){
+                  message.error("Unauthorized, 获取驾驶员数据失败");
+                }
+                else if (res.status === 403){
+                  message.error("Forbidden, 获取驾驶员数据失败");
+                }
+                else {
+                  message.error("Not Found, 获取驾驶员数据失败");
+                }
+              }
+            });
+          } else if (res.status === 401){
+              message.error("Unauthorized, 添加失败");
+              return;
             }
             else if (res.status === 403){
-              message.error("Forbidden, 获取驾驶员数据失败");
+              message.error("Forbidden, 添加失败"); 
+              return;
             }
             else {
-              message.error("Not Found, 获取驾驶员数据失败");
+              message.error("Not Found, 添加失败");
+              return;
             }
-          });
-        } else if (res.status === 401){
-            message.error("Unauthorized, 添加失败");
-            return;
-          }
-          else if (res.status === 403){
-            message.error("Forbidden, 添加失败"); 
-            return;
-          }
-          else {
-            message.error("Not Found, 添加失败");
-            return;
-          }
+        }
+        
         this.setState({ addDriverModalVisible: false });
         this.setState({
           addDriverNo: null,
@@ -337,51 +354,63 @@ class App extends React.Component {
         tel: this.state.updateDriverTel,
         telArea: this.state.updateDriverTelArea
       }).then(res => {
-        if (res.status === 201 || res.status === 200) {
-          message.success("更新成功！");
-          queryDriver().then(res => {
-            if (res.status === 201 || res.status === 200) {
-              let driverInfoTableDataSource = [];
-              res.data.forEach(element => {
-                let obj = {};
-                obj.no = element.no;
-                obj.name = element.name;
-                obj.telArea = element.telArea;
-                obj.tel = element.tel;
-                obj.realName = element.realName;
-                obj.email = element.email;
-                obj.authority = element.authority;
-                obj.icCode = element.icCode;
-                obj.password = element.password;
-                obj.position = element.position;
-                obj.staffGid = element.staffGid;
-                driverInfoTableDataSource.push(obj);
-              });
-              this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
-            } 
-            else if (res.status === 401){
-              message.error("Unauthorized, 获取驾驶员数据失败");
-            }
-            else if (res.status === 403){
-              message.error("Forbidden, 获取驾驶员数据失败");
-            }
-            else {
-              message.error("Not Found, 获取驾驶员数据失败");
-            }
-          });
-        } 
-        else if (res.status === 401){
-          message.error("Unauthorized, 更新失败");
+        if (res === undefined){
+          message.error("The returned data was not retrieved!");
           return;
         }
-        else if (res.status === 403){
-          message.error("Forbidden, 更新失败");
-          return;
+        else{
+          if (res.status === 201 || res.status === 200) {
+            message.success("更新成功！");
+            queryDriver().then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else{
+                if (res.status === 201 || res.status === 200) {
+                  let driverInfoTableDataSource = [];
+                  res.data.forEach(element => {
+                    let obj = {};
+                    obj.no = element.no;
+                    obj.name = element.name;
+                    obj.telArea = element.telArea;
+                    obj.tel = element.tel;
+                    obj.realName = element.realName;
+                    obj.email = element.email;
+                    obj.authority = element.authority;
+                    obj.icCode = element.icCode;
+                    obj.password = element.password;
+                    obj.position = element.position;
+                    obj.staffGid = element.staffGid;
+                    driverInfoTableDataSource.push(obj);
+                  });
+                  this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
+                } 
+                else if (res.status === 401){
+                  message.error("Unauthorized, 获取驾驶员数据失败");
+                }
+                else if (res.status === 403){
+                  message.error("Forbidden, 获取驾驶员数据失败");
+                }
+                else {
+                  message.error("Not Found, 获取驾驶员数据失败");
+                }
+              }
+            });
+          } 
+          else if (res.status === 401){
+            message.error("Unauthorized, 更新失败");
+            return;
+          }
+          else if (res.status === 403){
+            message.error("Forbidden, 更新失败");
+            return;
+          }
+          else {
+            message.error("Not Found, 更新失败");
+            return;
+          }
         }
-        else {
-          message.error("Not Found, 更新失败");
-          return;
-        }
+        
         this.setState({ updateDriverModalVisible: false });
         this.setState({
           updateDriverNo: obj.no,
@@ -428,51 +457,63 @@ class App extends React.Component {
       return;
     }
     deleteDriver([this.state.driverIdSelected[0]]).then(res => {
-      if (res.status === 200 || res.status === 201) {
-        message.success("删除成功！");
-        queryDriver().then(res => {
-          if (res.status === 200 || res.status === 201) {
-            let driverInfoTableDataSource = [];
-            res.data.forEach(element => {
-              let obj = {};
-              obj.no = element.no;
-              obj.name = element.name;
-              obj.telArea = element.telArea;
-              obj.tel = element.tel;
-              obj.realName = element.realName;
-              obj.email = element.email;
-              obj.authority = element.authority;
-              obj.icCode = element.icCode;
-              obj.password = element.password;
-              obj.position = element.position;
-              obj.staffGid = element.staffGid;
-              driverInfoTableDataSource.push(obj);
-            });
-            this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
-          } 
-          else if (res.status === 401) {
-            message.error("Unauthorized, 获取驾驶员数据失败");
-          }
-          else if (res.status === 403) {
-            message.error("Forbidden, 获取驾驶员数据失败");
-          }
-          else {
-            message.error("Not Found, 获取驾驶员数据失败");
-          }
-        });
-      } 
-      else if (res.status === 401) {
-        message.error("Unauthorized, 删除失败");
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
         return;
       }
-      else if (res.status === 403) {
-        message.error("Forbidden, 删除失败");
-        return;
+      else{
+        if (res.status === 200 || res.status === 201) {
+          message.success("删除成功！");
+          queryDriver().then(res => {
+            if (res === undefined){
+              message.error("The returned data was not retrieved!");
+            }
+            else{
+              if (res.status === 200 || res.status === 201) {
+                let driverInfoTableDataSource = [];
+                res.data.forEach(element => {
+                  let obj = {};
+                  obj.no = element.no;
+                  obj.name = element.name;
+                  obj.telArea = element.telArea;
+                  obj.tel = element.tel;
+                  obj.realName = element.realName;
+                  obj.email = element.email;
+                  obj.authority = element.authority;
+                  obj.icCode = element.icCode;
+                  obj.password = element.password;
+                  obj.position = element.position;
+                  obj.staffGid = element.staffGid;
+                  driverInfoTableDataSource.push(obj);
+                });
+                this.setState({ driverInfoTableDataSource: driverInfoTableDataSource });
+              } 
+              else if (res.status === 401) {
+                message.error("Unauthorized, 获取驾驶员数据失败");
+              }
+              else if (res.status === 403) {
+                message.error("Forbidden, 获取驾驶员数据失败");
+              }
+              else {
+                message.error("Not Found, 获取驾驶员数据失败");
+              }
+            }
+          });
+        } 
+        else if (res.status === 401) {
+          message.error("Unauthorized, 删除失败");
+          return;
+        }
+        else if (res.status === 403) {
+          message.error("Forbidden, 删除失败");
+          return;
+        }
+        else {
+          message.error("Not Found, 删除失败");
+          return;
+        }
       }
-      else {
-        message.error("Not Found, 删除失败");
-        return;
-      }
+      
       this.setState({ deleteNodeModalVisible: false });
     });
   };

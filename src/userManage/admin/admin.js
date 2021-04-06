@@ -9,7 +9,9 @@ import {
   Input,
   Modal,
   message,
+  Upload
 } from "antd";
+import * as XLSX from "xlsx";
 
 import {
   queryAdmin,
@@ -26,6 +28,39 @@ var i=0;
 
 const { Content } = Layout;
 const InputGroup = Input.Group;
+
+const Uploader = () => {
+  const props = {
+    beforeUpload: file => {
+      console.log(file.type);
+      let data = [];// 存储获取到的数据
+      const fileReader =new FileReader();
+      fileReader.readAsBinaryString(file);  //二进制
+      fileReader.onload = event => {
+        try {
+          const {result } = event.target;
+          const workbook = XLSX.read(result, {type:'binary' });
+          for (const sheet in workbook.Sheets) {
+            if (workbook.Sheets.hasOwnProperty(sheet)) {
+              data =data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+            }
+          }
+        console.log(data);
+        }catch (e) {
+          message.error(`${file.name} is not an excel file`);
+        return;
+        }
+      };
+    },
+  };
+  return (
+    <Upload {...props} multiple action="" showUploadList={false}>
+      <Button type="primary" style={{ marginLeft: 10 }}>
+        批量添加
+      </Button>
+    </Upload>
+  );
+};
 
 // const response = [
 //   {
@@ -163,37 +198,42 @@ class App extends React.Component {
   componentDidMount() {
     // 获取管理员数据
     queryAdmin().then(res => {
-      if (res.status === 200 || res.status === 201) {
-        let adminInfoTableDataSource = [];
-        res.data.data.forEach(element => {
-          // response.forEach(element => {
-          let obj = {};
-          obj.no = element.no;
-          obj.name = element.name;
-          obj.telArea = element.telArea;
-          obj.tel = element.tel;
-          obj.realName = element.realName;
-          obj.email = element.email;
-          obj.authority = element.authority;
-          obj.icCode = element.icCode;
-          obj.password = element.password;
-          obj.position = element.position;
-          obj.staffGid = element.staffGid;
-          adminInfoTableDataSource.push(obj);
-         });
-         this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-      } 
-      else if (res.status === 401){
-        message.error("Unauthorized, 获取管理员数据失败");
-        return;
-      }
-      else if (res.status === 403){
-        message.error("Forbidden, 获取管理员数据失败"); 
-        return;
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
       }
       else {
-        message.error("Not Found, 获取管理员数据失败");
-        return;
+        if (res.status === 200 || res.status === 201) {
+          let adminInfoTableDataSource = [];
+          res.data.forEach(element => {
+            // response.forEach(element => {
+            let obj = {};
+            obj.no = element.no;
+            obj.name = element.name;
+            obj.telArea = element.telArea;
+            obj.tel = element.tel;
+            obj.realName = element.realName;
+            obj.email = element.email;
+            obj.authority = element.authority;
+            obj.icCode = element.icCode;
+            obj.password = element.password;
+            obj.position = element.position;
+            obj.staffGid = element.staffGid;
+            adminInfoTableDataSource.push(obj);
+          });
+          this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+        } 
+        else if (res.status === 401){
+          message.error("Unauthorized, 获取管理员数据失败");
+          return;
+        }
+        else if (res.status === 403){
+          message.error("Forbidden, 获取管理员数据失败"); 
+          return;
+        }
+        else {
+          message.error("Not Found, 获取管理员数据失败");
+          return;
+        }
       }
      });
   }
@@ -233,49 +273,60 @@ class App extends React.Component {
         tel: this.state.addAdminTel,
         telArea: this.state.addAdminTelArea
       }).then(res => {
-        if (res.status === 201 || res.status === 200) {
-          message.success("添加成功！");
-          queryAdmin().then(res => {
-            if (res.status === 201 || res.status === 200) {
-              let adminInfoTableDataSource = [];
-              res.data.forEach(element => {
-                let obj = {};
-                obj.no = element.no;
-                obj.name = element.name;
-                obj.telArea = element.telArea;
-                obj.tel = element.tel;
-                obj.realName = element.realName;
-                obj.email = element.email;
-                obj.authority = element.authority;
-                obj.icCode = element.icCode;
-                obj.password = element.password;
-                obj.position = element.position;
-                obj.staffGid = element.staffGid;
-                adminInfoTableDataSource.push(obj);
-              });
-              this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-            } else if (res.status === 401){
-                message.error("Unauthorized, 获取管理员数据失败");
-              }
-              else if (res.status === 403){
-                message.error("Forbidden, 获取管理员数据失败");
-              }
-              else {
-                message.error("Not Found, 获取管理员数据失败");
-             }
-          });
-        } 
-        else if (res.status === 401){
-          message.error("Unauthorized, 添加失败");
+        if (res === undefined){
+          message.error("The returned data was not retrieved!");
           return;
         }
-        else if (res.status === 403){
-          message.error("Forbidden, 添加失败"); 
-          return;
-        }
-        else {
-          message.error("Not Found, 添加失败");
-          return;
+        else{
+          if (res.status === 201 || res.status === 200) {
+            message.success("添加成功！");
+            queryAdmin().then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else{
+                if (res.status === 201 || res.status === 200) {
+                  let adminInfoTableDataSource = [];
+                  res.data.forEach(element => {
+                    let obj = {};
+                    obj.no = element.no;
+                    obj.name = element.name;
+                    obj.telArea = element.telArea;
+                    obj.tel = element.tel;
+                    obj.realName = element.realName;
+                    obj.email = element.email;
+                    obj.authority = element.authority;
+                    obj.icCode = element.icCode;
+                    obj.password = element.password;
+                    obj.position = element.position;
+                    obj.staffGid = element.staffGid;
+                    adminInfoTableDataSource.push(obj);
+                  });
+                  this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+                } else if (res.status === 401){
+                    message.error("Unauthorized, 获取管理员数据失败");
+                  }
+                  else if (res.status === 403){
+                    message.error("Forbidden, 获取管理员数据失败");
+                  }
+                  else {
+                    message.error("Not Found, 获取管理员数据失败");
+                }
+              }
+            });
+          } 
+          else if (res.status === 401){
+            message.error("Unauthorized, 添加失败");
+            return;
+          }
+          else if (res.status === 403){
+            message.error("Forbidden, 添加失败"); 
+            return;
+          }
+          else {
+            message.error("Not Found, 添加失败");
+            return;
+          }
         }
         this.setState({ addAdminModalVisible: false });
         this.setState({
@@ -312,11 +363,6 @@ class App extends React.Component {
       addAdminStaffGid: null
     });
   };
-
-  // 批量添加管理员窗口可见
-  addAdminsModal = () => {
-    this.setState( {addAdminsModalVisible: true} );
-  }
 
   // 批量添加管理员信息
   addAdminsModalHandleOk = () => {
@@ -383,53 +429,65 @@ class App extends React.Component {
     });
     //console.log(admins);
     addAdmins(admins).then(res => {
-      if (res.status === 201 || res.status === 200) {
-        message.success("添加成功！");
-        queryAdmin().then(res => {
-          if (res.status === 201 || res.status === 200) {
-            let adminInfoTableDataSource = [];
-            res.data.forEach(element => {
-              let obj = {};
-              obj.no = element.no;
-              obj.name = element.name;
-              obj.telArea = element.telArea;
-              obj.tel = element.tel;
-              obj.realName = element.realName;
-              obj.email = element.email;
-              obj.authority = element.authority;
-              obj.icCode = element.icCode;
-              obj.password = element.password;
-              obj.position = element.position;
-              obj.staffGid = element.staffGid;
-              adminInfoTableDataSource.push(obj);
-            });
-            this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-          } 
-          else if (res.status === 401){
-            message.error("Unauthorized, 获取管理员数据失败");
-            return;
-          }
-          else if (res.status === 403){
-            message.error("Forbidden, 获取管理员数据失败");
-            return;
-          }
-          else {
-            message.error("Not Found, 获取管理员数据失败");
-            return;
-          }
-        });
-      } 
-      else if (res.status === 401){
-        message.error("Unauthorized, 批量添加失败");
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
         return;
       }
-      else if (res.status === 403){
-        message.error("Forbidden, 批量添加失败");
-        return;
-      }
-      else {
-        message.error("Not Found, 批量添加失败");
-        return;
+      else{
+        if (res.status === 201 || res.status === 200) {
+          message.success("添加成功！");
+          queryAdmin().then(res => {
+            if (res === undefined){
+              message.error("The returned data was not retrieved!");
+              return;
+            }
+            else{
+              if (res.status === 201 || res.status === 200) {
+                let adminInfoTableDataSource = [];
+                res.data.forEach(element => {
+                  let obj = {};
+                  obj.no = element.no;
+                  obj.name = element.name;
+                  obj.telArea = element.telArea;
+                  obj.tel = element.tel;
+                  obj.realName = element.realName;
+                  obj.email = element.email;
+                  obj.authority = element.authority;
+                  obj.icCode = element.icCode;
+                  obj.password = element.password;
+                  obj.position = element.position;
+                  obj.staffGid = element.staffGid;
+                  adminInfoTableDataSource.push(obj);
+                });
+                this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+              } 
+              else if (res.status === 401){
+                message.error("Unauthorized, 获取管理员数据失败");
+                return;
+              }
+              else if (res.status === 403){
+                message.error("Forbidden, 获取管理员数据失败");
+                return;
+              }
+              else {
+                message.error("Not Found, 获取管理员数据失败");
+                return;
+              }
+            }
+          });
+        } 
+        else if (res.status === 401){
+          message.error("Unauthorized, 批量添加失败");
+          return;
+        }
+        else if (res.status === 403){
+          message.error("Forbidden, 批量添加失败");
+          return;
+        }
+        else {
+          message.error("Not Found, 批量添加失败");
+          return;
+        }
       }
     });
   };
@@ -464,51 +522,63 @@ class App extends React.Component {
         tel: this.state.updateAdminTel,
         telArea: this.state.updateAdminTelArea
       }).then(res => {
-        if (res.status === 201 || res.status === 200) {
-          message.success("更新成功！");
-          queryAdmin().then(res => {
-            if (res.status === 201 || res.status === 200) {
-              let adminInfoTableDataSource = [];
-              res.data.forEach(element => {
-                let obj = {};
-                obj.no = element.no;
-                obj.name = element.name;
-                obj.telArea = element.telArea;
-                obj.tel = element.tel;
-                obj.realName = element.realName;
-                obj.email = element.email;
-                obj.authority = element.authority;
-                obj.icCode = element.icCode;
-                obj.password = element.password;
-                obj.position = element.position;
-                obj.staffGid = element.staffGid;
-                adminInfoTableDataSource.push(obj);
-              });
-              this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-            } 
-            else if (res.status === 401){
-              message.error("Unauthorized, 获取管理员数据失败");
-            }
-            else if (res.status === 403){
-              message.error("Forbidden, 获取管理员数据失败");
-            }
-            else {
-              message.error("Not Found, 获取管理员数据失败");
-            }
-          });
-        } 
-        else if (res.status === 401){
-          message.error("Unauthorized, 更新失败");
+        if (res === undefined){
+          message.error("The returned data was not retrieved!");
           return;
         }
-        else if (res.status === 403){
-          message.error("Forbidden, 更新失败");
-          return;
+        else{
+          if (res.status === 201 || res.status === 200) {
+            message.success("更新成功！");
+            queryAdmin().then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else{
+                if (res.status === 201 || res.status === 200) {
+                  let adminInfoTableDataSource = [];
+                  res.data.forEach(element => {
+                    let obj = {};
+                    obj.no = element.no;
+                    obj.name = element.name;
+                    obj.telArea = element.telArea;
+                    obj.tel = element.tel;
+                    obj.realName = element.realName;
+                    obj.email = element.email;
+                    obj.authority = element.authority;
+                    obj.icCode = element.icCode;
+                    obj.password = element.password;
+                    obj.position = element.position;
+                    obj.staffGid = element.staffGid;
+                    adminInfoTableDataSource.push(obj);
+                  });
+                  this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+                } 
+                else if (res.status === 401){
+                  message.error("Unauthorized, 获取管理员数据失败");
+                }
+                else if (res.status === 403){
+                  message.error("Forbidden, 获取管理员数据失败");
+                }
+                else {
+                  message.error("Not Found, 获取管理员数据失败");
+                }
+              }
+            });
+          } 
+          else if (res.status === 401){
+            message.error("Unauthorized, 更新失败");
+            return;
+          }
+          else if (res.status === 403){
+            message.error("Forbidden, 更新失败");
+            return;
+          }
+          else {
+            message.error("Not Found, 更新失败");
+            return;
+          }
         }
-        else {
-          message.error("Not Found, 更新失败");
-          return;
-        }
+        
         this.setState({ updateAdminModalVisible: false });
         this.setState({
           updateAdminNo: obj.no,
@@ -555,51 +625,64 @@ class App extends React.Component {
       return;
     }
     deleteAdmin([this.state.adminIdSelected[0]]).then(res => {
-      if (res.status === 200 || res.status === 201) {
-        message.success("删除成功！");
-        queryAdmin().then(res => {
-          if (res.status === 200 || res.status === 201) {
-            let adminInfoTableDataSource = [];
-            res.data.forEach(element => {
-              let obj = {};
-              obj.no = element.no;
-              obj.name = element.name;
-              obj.telArea = element.telArea;
-              obj.tel = element.tel;
-              obj.realName = element.realName;
-              obj.email = element.email;
-              obj.authority = element.authority;
-              obj.icCode = element.icCode;
-              obj.password = element.password;
-              obj.position = element.position;
-              obj.staffGid = element.staffGid;
-              adminInfoTableDataSource.push(obj);
-            });
-            this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-          } 
-          else if (res.status === 401) {
-            message.error("Unauthorized, 获取管理员数据失败");
-          }
-          else if (res.status === 403) {
-            message.error("Forbidden, 获取管理员数据失败");
-          }
-          else {
-            message.error("Not Found, 获取管理员数据失败");
-          }
-        });
-      } 
-      else if (res.status === 401) {
-        message.error("Unauthorized, 删除失败");
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
         return;
       }
-      else if (res.status === 403) {
-        message.error("Forbidden, 删除失败");
-        return;
+      else{
+        if (res.status === 200 || res.status === 201) {
+          message.success("删除成功！");
+          queryAdmin().then(res => {
+            if (res === undefined){
+              message.error("The returned data was not retrieved!");
+            }
+            else{
+              if (res.status === 200 || res.status === 201) {
+                let adminInfoTableDataSource = [];
+                res.data.forEach(element => {
+                  let obj = {};
+                  obj.no = element.no;
+                  obj.name = element.name;
+                  obj.telArea = element.telArea;
+                  obj.tel = element.tel;
+                  obj.realName = element.realName;
+                  obj.email = element.email;
+                  obj.authority = element.authority;
+                  obj.icCode = element.icCode;
+                  obj.password = element.password;
+                  obj.position = element.position;
+                  obj.staffGid = element.staffGid;
+                  adminInfoTableDataSource.push(obj);
+                });
+                this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+              } 
+              else if (res.status === 401) {
+                message.error("Unauthorized, 获取管理员数据失败");
+              }
+              else if (res.status === 403) {
+                message.error("Forbidden, 获取管理员数据失败");
+              }
+              else {
+                message.error("Not Found, 获取管理员数据失败");
+              }
+            }
+            
+          });
+        } 
+        else if (res.status === 401) {
+          message.error("Unauthorized, 删除失败");
+          return;
+        }
+        else if (res.status === 403) {
+          message.error("Forbidden, 删除失败");
+          return;
+        }
+        else {
+          message.error("Not Found, 删除失败");
+          return;
+        }
       }
-      else {
-        message.error("Not Found, 删除失败");
-        return;
-      }
+      
       this.setState({ deleteNodeModalVisible: false });
     });
   };
@@ -634,13 +717,11 @@ class App extends React.Component {
                 <Row>
                   <Col className="gutter-row-nodemanage" span={6}>
                     <div className="gutter-box-nodemanage">
-                      <div>
+                    <div>
                         <Button type="primary" onClick={this.addAdminModal}>
                           添加
                         </Button>
-                        <Button type="primary" onClick={this.addAdminsModal} style={{ marginLeft: 10 }}>
-                          批量添加
-                        </Button>
+                        <Uploader />
                         <Button
                           disabled={this.state.deleteAdminDisabled}
                           onClick={this.deleteNodeModel}

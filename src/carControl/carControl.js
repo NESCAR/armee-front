@@ -94,12 +94,17 @@ const nodeInfoTableColumns = [
               obj.et,
               obj.st
             ]).then(res => {
-              switch (res.status){
-                case 401:message.error("Unauthorized, 指令下发失败");break;
-                case 403:message.error("Forbidden, 指令下发失败");break;
-                case 404:message.error("Not Found, 指令下发失败");break;
-                case 200:message.success("指令下发成功");break;
-                case 201:message.success("指令下发成功");break;
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
+              }
+              else{
+                switch (res.status){
+                  case 401:message.error("Unauthorized, 指令下发失败");break;
+                  case 403:message.error("Forbidden, 指令下发失败");break;
+                  case 404:message.error("Not Found, 指令下发失败");break;
+                  case 200:message.success("指令下发成功");break;
+                  case 201:message.success("指令下发成功");break;
+                }
               }
             })
           }
@@ -116,12 +121,17 @@ const nodeInfoTableColumns = [
         lockIm([
           record.deviceId
         ]).then(res => {
-          switch (res.status){
-            case 401:message.error("Unauthorized, 指令下发失败");break;
-            case 403:message.error("Forbidden, 指令下发失败");break;
-            case 404:message.error("Not Found, 指令下发失败");break;
-            case 200:message.success("指令下发成功");break;
-            case 201:message.success("指令下发成功");break;
+          if (res === undefined){
+            message.error("The returned data was not retrieved!");
+          }
+          else{
+            switch (res.status){
+              case 401:message.error("Unauthorized, 指令下发失败");break;
+              case 403:message.error("Forbidden, 指令下发失败");break;
+              case 404:message.error("Not Found, 指令下发失败");break;
+              case 200:message.success("指令下发成功");break;
+              case 201:message.success("指令下发成功");break;
+            }
           }
         })
       }}>立即上锁</Button>
@@ -145,27 +155,32 @@ class App extends React.Component {
     // 获得汽车列表数据并整型数组
     queryDevice().then(res => {
       console.log(res);
-      if (res.status === 201 || res.status === 200) {
-        let nodeInfoTableDataSource = [];
-        // response.forEach(element => {
-        res.data.data.forEach(element => {
-          let obj={};
-          obj.deviceId = element.gid;
-          nodeInfoTableDataSource.push(obj);
-        });
-        this.setState({ nodeInfoTableDataSource: nodeInfoTableDataSource });
-      } 
-      else if (res.status === 401) {
-        message.error("Unauthorized, 获取汽车列表失败");
-        return;
+      if (res === undefined){
+        message.error("The returned data was not retrieved!");
       }
-      else if (res.status === 403) {
-        message.error("Forbidden, 获取汽车列表失败");
-        return;
-      }
-      else if (res.status === 404) {
-        message.error("Not Found, 获取汽车列表失败");
-        return;
+      else {
+        if (res.status === 201 || res.status === 200) {
+          let nodeInfoTableDataSource = [];
+          // response.forEach(element => {
+          res.data.forEach(element => {
+            let obj={};
+            obj.deviceId = element.gid;
+            nodeInfoTableDataSource.push(obj);
+          });
+          this.setState({ nodeInfoTableDataSource: nodeInfoTableDataSource });
+        } 
+        else if (res.status === 401) {
+          message.error("Unauthorized, 获取汽车列表失败");
+          return;
+        }
+        else if (res.status === 403) {
+          message.error("Forbidden, 获取汽车列表失败");
+          return;
+        }
+        else if (res.status === 404) {
+          message.error("Not Found, 获取汽车列表失败");
+          return;
+        }
       }
     });
   }
