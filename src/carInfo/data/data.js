@@ -314,7 +314,7 @@ class App extends React.Component {
         message.error("请输入完整信息！");
       } 
       else {
-        if (this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-'){
+        if (this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockStartTime !== null && this.state.updateDeviceLockEndTime !== null){
           let date = new Date();
           let endTime = this.state.updateDeviceLockEndTime;
           let startTime = this.state.updateDeviceLockStartTime;
@@ -330,7 +330,7 @@ class App extends React.Component {
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
         }
-        else if (this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] === '-'){
+        else if ((this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] === '-' && this.state.updateDeviceLockStartTime !== null) || (this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockStartTime !== null && this.state.updateDeviceLockEndTime === null) ){
           let date = new Date();
           let startTime = this.state.updateDeviceLockStartTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
@@ -345,7 +345,7 @@ class App extends React.Component {
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
         }
-        else if (this.state.updateDeviceLockStartTime[4] === '-' && this.state.updateDeviceLockEndTime[4] !== '-'){
+        else if ((this.state.updateDeviceLockStartTime[4] === '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockEndTime != null) || this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockStartTime === null && this.state.updateDeviceLockEndTime !== null ){
           let date = new Date();
           let endTime = this.state.updateDeviceLockEndTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
