@@ -186,6 +186,7 @@ class App extends React.Component {
         let date = new Date();
         let endTime = this.state.addDeviceLockEndTime;
         let startTime = this.state.addDeviceLockStartTime;
+        let data = {};
         data.driverGid = parseInt(this.state.addDeviceDriverGid);
         data.gid = parseInt(this.state.addDeviceGid);
         data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+08:00";
