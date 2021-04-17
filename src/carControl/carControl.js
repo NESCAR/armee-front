@@ -67,9 +67,17 @@ const nodeInfoTableColumns = [
     dataIndex: "time",
     key: "time",
     render: () => (
-      <RangePicker showTime onChange={(e)=>{
-        st = e[0]._d; 
-        et = e[1]._d;
+      <RangePicker showTime 
+      placeholder = {["开始时间","结束时间"]}
+      onChange={(e)=>{
+        if (e){
+          st = e[0]._d; 
+          et = e[1]._d;
+        }
+        else {
+          st = null;
+          et = null;
+        }
         //console.log(st);
       }}/>
     ),
@@ -84,8 +92,8 @@ const nodeInfoTableColumns = [
             message.error("请输入完整信息");
           }
           else {
-            obj.st = st.getFullYear()+"-"+add((st.getMonth()+1))+"-"+add(st.getDate())+"T"+add(st.getHours())+":"+add(st.getMinutes())+":"+add(st.getSeconds())+"."+addmilli(st.getMilliseconds())+"+08:00";
-            obj.et = et.getFullYear()+"-"+add((et.getMonth()+1))+"-"+add(et.getDate())+"T"+add(et.getHours())+":"+add(et.getMinutes())+":"+add(et.getSeconds())+"."+addmilli(et.getMilliseconds())+"+08:00";
+            obj.st = st.getUTCFullYear()+"-"+add((st.getUTCMonth()+1))+"-"+add(st.getUTCDate())+"T"+add(st.getUTCHours())+":"+add(st.getUTCMinutes())+":"+add(st.getUTCSeconds())+"."+addmilli(st.getUTCMilliseconds())+"+00:00";
+            obj.et = et.getUTCFullYear()+"-"+add((et.getUTCMonth()+1))+"-"+add(et.getUTCDate())+"T"+add(et.getUTCHours())+":"+add(et.getUTCMinutes())+":"+add(et.getUTCSeconds())+"."+addmilli(et.getUTCMilliseconds())+"+00:00";
             obj.deviceId = record.deviceId;
             console.log(obj.st);
             addLockInfo([

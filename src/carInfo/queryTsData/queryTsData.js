@@ -29,6 +29,7 @@ import {
 } from "../../axios";
 import "./queryTsData.css";
 import qs from "qs";
+import moment from "moment";
 // import BMap  from 'BMap';
 
 const { Content } = Layout;
@@ -54,7 +55,7 @@ var data = [];
 var objSpeed = [];
 var location = [
   {
-    time: new Date().getFullYear()+"-"+add((new Date().getMonth()+1))+"-"+add(new Date().getDate())+"T"+add(new Date().getHours())+":"+add(new Date().getMinutes())+":"+add(new Date().getSeconds())+"."+addmilli(new Date().getMilliseconds())+"+08:00",
+    time: new Date().getUTCFullYear()+"-"+add((new Date().getUTCMonth()+1))+"-"+add(new Date().getUTCDate())+"T"+add(new Date().getUTCHours())+":"+add(new Date().getUTCMinutes())+":"+add(new Date().getUTCSeconds())+"."+addmilli(new Date().getUTCMilliseconds())+"+00:00",
     lng: 116.397128,
     lat: 39.916527,
     height: 0,
@@ -215,9 +216,10 @@ class App extends React.Component {
 
   componentDidMount() {
     let date = new Date();
+    console.log(date);
     carQueryParam.tags.terminalId="768901005626";
-    carQueryParam.st=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(0)+":"+add(0)+":"+add(0)+"."+addmilli(0)+"+08:00";
-    carQueryParam.et=date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(23)+":"+add(59)+":"+add(59)+"."+addmilli(999)+"+08:00";
+    carQueryParam.st=date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(0)+":"+add(0)+":"+add(0)+"."+addmilli(0)+"+00:00";
+    carQueryParam.et=date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(23)+":"+add(59)+":"+add(59)+"."+addmilli(999)+"+00:00";
     console.log(qs.stringify(carQueryParam));
     queryTsData(carQueryParam).then(res => {
       if (res == undefined){
@@ -236,7 +238,7 @@ class App extends React.Component {
                 data[length] = element;
                 objSpeed[length]=new Object();
                 objSpeed[length].speed = element[4];
-                objSpeed[length].time = element[0];
+                objSpeed[length].time = new Date(element[0]).getFullYear()+"-"+add((new Date(element[0]).getMonth()+1))+"-"+add(new Date(element[0]).getDate())+" "+add(new Date(element[0]).getHours())+":"+add(new Date(element[0]).getMinutes())+":"+add(new Date(element[0]).getSeconds())+'.'+addmilli(new Date(element[0]).getMilliseconds);
                 location[length]=new Object();
                 if (element[5] === 0){
                   location[length].direction="正北";
@@ -306,10 +308,12 @@ class App extends React.Component {
       message.error("请输入完整查询信息！");
     }
     else {
+      console.log(this.state.inputDeviceSt);
+      console.log(this.state.inputDeviceEt);
       carQueryParam.tags.terminalId=this.state.inputDeviceTerminalId;
-      carQueryParam.st=this.state.inputDeviceSt.getFullYear()+"-"+add((this.state.inputDeviceSt.getMonth()+1))+"-"+add(this.state.inputDeviceSt.getDate())+"T"+add(this.state.inputDeviceSt.getHours())+":"+add(this.state.inputDeviceSt.getMinutes())+":"+add(this.state.inputDeviceSt.getSeconds())+"."+addmilli(this.state.inputDeviceSt.getMilliseconds())+"+08:00";
-      carQueryParam.et=this.state.inputDeviceEt.getFullYear()+"-"+add((this.state.inputDeviceEt.getMonth()+1))+"-"+add(this.state.inputDeviceEt.getDate())+"T"+add(this.state.inputDeviceEt.getHours())+":"+add(this.state.inputDeviceEt.getMinutes())+":"+add(this.state.inputDeviceEt.getSeconds())+"."+addmilli(this.state.inputDeviceEt.getMilliseconds())+"+08:00";
-      console.log("car query param : " + carQueryParam);
+      carQueryParam.st=this.state.inputDeviceSt.getUTCFullYear()+"-"+add((this.state.inputDeviceSt.getUTCMonth()+1))+"-"+add(this.state.inputDeviceSt.getUTCDate())+"T"+add(this.state.inputDeviceSt.getUTCHours())+":"+add(this.state.inputDeviceSt.getUTCMinutes())+":"+add(this.state.inputDeviceSt.getUTCSeconds())+"."+addmilli(this.state.inputDeviceSt.getUTCMilliseconds())+"+00:00";
+      carQueryParam.et=this.state.inputDeviceEt.getUTCFullYear()+"-"+add((this.state.inputDeviceEt.getUTCMonth()+1))+"-"+add(this.state.inputDeviceEt.getUTCDate())+"T"+add(this.state.inputDeviceEt.getUTCHours())+":"+add(this.state.inputDeviceEt.getUTCMinutes())+":"+add(this.state.inputDeviceEt.getUTCSeconds())+"."+addmilli(this.state.inputDeviceEt.getUTCMilliseconds())+"+00:00";
+      console.log(carQueryParam.st);
       queryTsData(carQueryParam).then(res => {
         if (res == undefined){
           message.error("The returned data was not retrieved!");
@@ -327,49 +331,49 @@ class App extends React.Component {
               data[length]=new Array();
               data[length] = element;
               objSpeed[length]=new Object();
-              objSpeed[length].speed = element[5];
-              objSpeed[length].time = element[4];
+              objSpeed[length].speed = element[4];
+              objSpeed[length].time = new Date(element[0]).getFullYear()+"-"+add((new Date(element[0]).getMonth()+1))+"-"+add(new Date(element[0]).getDate())+" "+add(new Date(element[0]).getHours())+":"+add(new Date(element[0]).getMinutes())+":"+add(new Date(element[0]).getSeconds())+'.'+addmilli(new Date(element[0]).getMilliseconds);
               location[length]=new Object();
-              if (element[0] === 0){
+              if (element[5] === 0){
                 location[length].direction="正北";
               }
-              else if(element[0] === 90){
+              else if(element[5] === 90){
                 location[length].direction="正东";
               }
-              else if (element[0] === 180){
+              else if (element[5] === 180){
                 location[length].direction="正南";
               }
-              else if (element[0] === 270){
+              else if (element[5] === 270){
                 location[length].direction="正西";
               }
-              else if (element[0] > 0 && element[0] < 90){
-                location[length].direction="北偏东"+element[0]+"°";
+              else if (element[5] > 0 && element[5] < 90){
+                location[length].direction="北偏东"+element[5]+"°";
               }
-              else if (element[0] > 90 && element[0] < 180){
-                location[length].direction="南偏东"+(180-element[0])+"°";
+              else if (element[5] > 90 && element[5] < 180){
+                location[length].direction="南偏东"+(180-element[5])+"°";
               }
-              else if (element[0] > 180 && element[0] < 270){
-                location[length].direction="南偏西"+(element[0]-180)+"°";
+              else if (element[5] > 180 && element[5] < 270){
+                location[length].direction="南偏西"+(element[5]-180)+"°";
               }
               else {
-                location[length].direction="北偏西"+(360-element[0])+"°";
+                location[length].direction="北偏西"+(360-element[5])+"°";
               }
               location[length].height = element[1];
-              location[length].lat = element[2]*1.0;
-              location[length].lng = element[3]*1.0;
-              location[length].time = element[4];
+              location[length].lat = element[3]*1.0;
+              location[length].lng = element[1]*1.0;
+              location[length].time = element[0];
               historicalLocation[length]=new Object();
-              historicalLocation[length].lat=element[2]*1.0;
-              historicalLocation[length].lng=element[3]*1.0;
+              historicalLocation[length].lat=element[3]*1.0;
+              historicalLocation[length].lng=element[1]*1.0;
               length++;
             });
-          length--;
-          // console.log(data);
-          this.setState({accOnlineState : "" + (data[length][6] & 1) === "1" ? "开" : "关"});
-          this.setState({carLoadState : "" + (data[length][6] & 768) === "768" ? "满载" : ("" + (data[length][6] & 768) === "0" ? "空载" : "半载")});
-          this.setState({oilWayState : "" + (data[length][6] & 1024) === "1024" ? "正常" : "断开"});
-          this.setState({elecWayState: "" + (data[length][6] & 2048) === "2048" ? "正常" : "断开"});
-          this.setState({carDoorState : "" + (data[length][6] & 4096) === "4096" ? "加锁" : "解锁"});
+            length--;
+            // console.log(data);
+            this.setState({accOnlineState : "" + (data[length][6] & 1) === "1" ? "开" : "关"});
+            this.setState({carLoadState : "" + (data[length][6] & 768) === "768" ? "满载" : ("" + (data[length][6] & 768) === "0" ? "空载" : "半载")});
+            this.setState({oilWayState : "" + (data[length][6] & 1024) === "1024" ? "正常" : "断开"});
+            this.setState({elecWayState: "" + (data[length][6] & 2048) === "2048" ? "正常" : "断开"});
+            this.setState({carDoorState : "" + (data[length][6] & 4096) === "4096" ? "加锁" : "解锁"});
           }
           else if (res.status === 401){
             message.error("Unauthorized, 获取时序数据失败");
@@ -468,7 +472,7 @@ class App extends React.Component {
                 </div>
               }
               dataSource={[
-                "时间："+location[length].time,
+                "时间："+ new Date(location[length].time).getFullYear()+"-"+add((new Date(location[length].time).getMonth()+1))+"-"+add(new Date(location[length].time).getDate())+" "+add(new Date(location[length].time).getHours())+":"+add(new Date(location[length].time).getMinutes())+":"+add(new Date(location[length].time).getSeconds()),
                 "经度："+location[length].lng+'°',
                 "纬度："+location[length].lat+'°',
                 "高程："+location[length].height+'米',
@@ -654,7 +658,12 @@ class App extends React.Component {
                     placeholder="请输入查询开始时间"
                     key={this.state.keyValue}
                     onChange={(e)=>{
-                      this.setState({inputDeviceSt: e._d});
+                      if (e){
+                        this.setState({inputDeviceSt: e._d});
+                      }
+                      else {
+                        this.setState({inputDeviceSt: null});
+                      }
                     }}
                     />
                 </InputGroup>
@@ -669,7 +678,12 @@ class App extends React.Component {
                     placeholder="请输入查询结束时间"
                     key={this.state.keyValue}
                     onChange={(e)=>{
-                      this.setState({inputDeviceEt: e._d});
+                      if (e){
+                        this.setState({inputDeviceEt: e._d});
+                      }
+                      else {
+                        this.setState({inputDeviceEt: null});
+                      }
                     }}
                   />  
                 </InputGroup>

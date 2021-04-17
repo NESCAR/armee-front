@@ -144,8 +144,8 @@ class App extends React.Component {
             obj.imei = element.imei;
             obj.imsi = element.imsi;
             obj.licensePlate = element.licensePlate;
-            obj.lockStartTime = element.lockStartTime;
-            obj.lockEndTime = element.lockEndTime;
+            obj.lockStartTime = new Date(element.lockStartTime).getFullYear()+"-"+add((new Date(element.lockStartTime).getMonth()+1))+"-"+add(new Date(element.lockStartTime).getDate())+" "+add(new Date(element.lockStartTime).getHours())+":"+add(new Date(element.lockStartTime).getMinutes())+":"+add(new Date(element.lockStartTime).getSeconds());
+            obj.lockEndTime = new Date(element.lockEndTime).getFullYear()+"-"+add((new Date(element.lockEndTime).getMonth()+1))+"-"+add(new Date(element.lockEndTime).getDate())+" "+add(new Date(element.lockEndTime).getHours())+":"+add(new Date(element.lockEndTime).getMinutes())+":"+add(new Date(element.lockEndTime).getSeconds());
             obj.lockStatus = element.lockStatus;  
             deviceInfoTableDataSource.push(obj);
            });
@@ -178,8 +178,6 @@ class App extends React.Component {
         !this.state.addDeviceImei  ||
         !this.state.addDeviceImsi  ||
         !this.state.addDeviceLicensePlate  ||
-        !this.state.addDeviceLockStartTime  ||
-        !this.state.addDeviceLockEndTime  ||
         !this.state.addDeviceLockStatus  ||
         !this.state.addDevicePsw
       ) {
@@ -188,19 +186,33 @@ class App extends React.Component {
         let date = new Date();
         let endTime = this.state.addDeviceLockEndTime;
         let startTime = this.state.addDeviceLockStartTime;
-        addDevice({
-          driverGid: parseInt(this.state.addDeviceDriverGid),
-          gid: parseInt(this.state.addDeviceGid),
-          gmtCreate: date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00",
-          gmtUpdate: date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00",
-          imei: this.state.addDeviceImei,
-          imsi: this.state.addDeviceImsi,
-          licensePlate: this.state.addDeviceLicensePlate,
-          lockEndTime: endTime.getFullYear()+"-"+add((endTime.getMonth()+1))+"-"+add(endTime.getDate())+"T"+add(endTime.getHours())+":"+add(endTime.getMinutes())+":"+add(endTime.getSeconds())+"."+addmilli(endTime.getMilliseconds())+"+08:00",
-          lockStartTime: startTime.getFullYear()+"-"+add((startTime.getMonth()+1))+"-"+add(startTime.getDate())+"T"+add(startTime.getHours())+":"+add(startTime.getMinutes())+":"+add(startTime.getSeconds())+"."+addmilli(startTime.getMilliseconds())+"+08:00",
-          lockStatus: parseInt(this.state.addDeviceLockStatus),
-          psw: this.state.addDevicePsw
-        }).then(res => {
+        data.driverGid = parseInt(this.state.addDeviceDriverGid);
+        data.gid = parseInt(this.state.addDeviceGid);
+        data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+08:00";
+        data.gmtUpdate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+08:00";
+        data.imei = this.state.addDeviceImei;
+        data.imsi = this.state.addDeviceImsi;
+        data.licensePlate = this.state.addDeviceLicensePlate;
+        data.lockStatus = parseInt(this.state.addDeviceLockStatus);
+        data.psw = this.state.addDevicePsw
+        if (endTime && startTime){
+          data.lockEndTime = endTime.getUTCFullYear()+"-"+add((endTime.getUTCMonth()+1))+"-"+add(endTime.getUTCDate())+"T"+add(endTime.getUTCHours())+":"+add(endTime.getUTCMinutes())+":"+add(endTime.getUTCSeconds())+"."+addmilli(endTime.getUTCMilliseconds())+"+08:00";
+          data.lockStartTime = startTime.getUTCFullYear()+"-"+add((startTime.getUTCMonth()+1))+"-"+add(startTime.getUTCDate())+"T"+add(startTime.getUTCHours())+":"+add(startTime.getUTCMinutes())+":"+add(startTime.getUTCSeconds())+"."+addmilli(startTime.getUTCMilliseconds())+"+08:00";
+        }
+        else if (!endTime && startTime){
+          data.lockEndTime = null;
+          data.lockStartTime = startTime.getUTCFullYear()+"-"+add((startTime.getUTCMonth()+1))+"-"+add(startTime.getUTCDate())+"T"+add(startTime.getUTCHours())+":"+add(startTime.getUTCMinutes())+":"+add(startTime.getUTCSeconds())+"."+addmilli(startTime.getUTCMilliseconds())+"+08:00";
+        }
+        else if (endTime && !startTime){
+          data.lockEndTime = endTime.getUTCFullYear()+"-"+add((endTime.getUTCMonth()+1))+"-"+add(endTime.getUTCDate())+"T"+add(endTime.getUTCHours())+":"+add(endTime.getUTCMinutes())+":"+add(endTime.getUTCSeconds())+"."+addmilli(endTime.getUTCMilliseconds())+"+08:00";;
+          data.lockStartTime = null;
+        }
+        else {
+          data.lockEndTime = null;
+          data.lockStartTime = null;
+        }
+        console.log(data);
+        addDevice(data).then(res => {
           if (res === undefined){
             message.error("The returned data was not retrieved!");
             return;
@@ -222,8 +234,8 @@ class App extends React.Component {
                       obj.imei = element.imei;
                       obj.imsi = element.imsi;
                       obj.licensePlate = element.licensePlate;
-                      obj.lockStartTime = element.lockStartTime;
-                      obj.lockEndTime = element.lockEndTime;
+                      obj.lockStartTime = new Date(element.lockStartTime).getFullYear()+"-"+add((new Date(element.lockStartTime).getMonth()+1))+"-"+add(new Date(element.lockStartTime).getDate())+" "+add(new Date(element.lockStartTime).getHours())+":"+add(new Date(element.lockStartTime).getMinutes())+":"+add(new Date(element.lockStartTime).getSeconds());
+                      obj.lockEndTime = new Date(element.lockEndTime).getFullYear()+"-"+add((new Date(element.lockEndTime).getMonth()+1))+"-"+add(new Date(element.lockEndTime).getDate())+" "+add(new Date(element.lockEndTime).getHours())+":"+add(new Date(element.lockEndTime).getMinutes())+":"+add(new Date(element.lockEndTime).getSeconds());
                       obj.lockStatus = element.lockStatus;  
                       deviceInfoTableDataSource.push(obj);
                     });
@@ -308,13 +320,13 @@ class App extends React.Component {
           let startTime = this.state.updateDeviceLockStartTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
           data.gid = parseInt(this.state.updateDeviceGid);
-          data.gmtCreate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
-          data.gmtUpdate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
+          data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
+          data.gmtUpdate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
           data.imei = this.state.updateDeviceImei;
           data.imsi = this.state.updateDeviceImsi;
           data.licensePlate = this.state.updateDeviceLicensePlate;
-          data.lockEndTime = endTime.getFullYear()+"-"+add((endTime.getMonth()+1))+"-"+add(endTime.getDate())+"T"+add(endTime.getHours())+":"+add(endTime.getMinutes())+":"+add(endTime.getSeconds())+"."+addmilli(endTime.getMilliseconds())+"+08:00";
-          data.lockStartTime = startTime.getFullYear()+"-"+add((startTime.getMonth()+1))+"-"+add(startTime.getDate())+"T"+add(startTime.getHours())+":"+add(startTime.getMinutes())+":"+add(startTime.getSeconds())+"."+addmilli(startTime.getMilliseconds())+"+08:00";
+          data.lockEndTime = endTime.getUTCFullYear()+"-"+add((endTime.getUTCMonth()+1))+"-"+add(endTime.getUTCDate())+"T"+add(endTime.getUTCHours())+":"+add(endTime.getUTCMinutes())+":"+add(endTime.getUTCSeconds())+"."+addmilli(endTime.getUTCMilliseconds())+"+00:00";
+          data.lockStartTime = startTime.getUTCFullYear()+"-"+add((startTime.getUTCMonth()+1))+"-"+add(startTime.getUTCDate())+"T"+add(startTime.getUTCHours())+":"+add(startTime.getUTCMinutes())+":"+add(startTime.getUTCSeconds())+"."+addmilli(startTime.getUTCMilliseconds())+"+00:00";
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
         }
@@ -323,13 +335,13 @@ class App extends React.Component {
           let startTime = this.state.updateDeviceLockStartTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
           data.gid = parseInt(this.state.updateDeviceGid);
-          data.gmtCreate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
-          data.gmtUpdate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
+          data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
+          data.gmtUpdate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
           data.imei = this.state.updateDeviceImei;
           data.imsi = this.state.updateDeviceImsi;
           data.licensePlate = this.state.updateDeviceLicensePlate;
           data.lockEndTime = this.state.updateDeviceLockEndTime;
-          data.lockStartTime = startTime.getFullYear()+"-"+add((startTime.getMonth()+1))+"-"+add(startTime.getDate())+"T"+add(startTime.getHours())+":"+add(startTime.getMinutes())+":"+add(startTime.getSeconds())+"."+addmilli(startTime.getMilliseconds())+"+08:00";
+          data.lockStartTime = startTime.getUTCFullYear()+"-"+add((startTime.getUTCMonth()+1))+"-"+add(startTime.getUTCDate())+"T"+add(startTime.getUTCHours())+":"+add(startTime.getUTCMinutes())+":"+add(startTime.getUTCSeconds())+"."+addmilli(startTime.getUTCMilliseconds())+"+00:00";
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
         }
@@ -338,12 +350,12 @@ class App extends React.Component {
           let endTime = this.state.updateDeviceLockEndTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
           data.gid = parseInt(this.state.updateDeviceGid);
-          data.gmtCreate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
-          data.gmtUpdate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
+          data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
+          data.gmtUpdate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
           data.imei = this.state.updateDeviceImei;
           data.imsi = this.state.updateDeviceImsi;
           data.licensePlate = this.state.updateDeviceLicensePlate;
-          data.lockEndTime = endTime.getFullYear()+"-"+add((endTime.getMonth()+1))+"-"+add(endTime.getDate())+"T"+add(endTime.getHours())+":"+add(endTime.getMinutes())+":"+add(endTime.getSeconds())+"."+addmilli(endTime.getMilliseconds())+"+08:00";
+          data.lockEndTime = endTime.getUTCFullYear()+"-"+add((endTime.getUTCMonth()+1))+"-"+add(endTime.getUTCDate())+"T"+add(endTime.getUTCHours())+":"+add(endTime.getUTCMinutes())+":"+add(endTime.getUTCSeconds())+"."+addmilli(endTime.getUTCMilliseconds())+"+00:00";
           data.lockStartTime = this.state.updateDeviceLockStartTime;
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
@@ -352,8 +364,8 @@ class App extends React.Component {
           let date = new Date();
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);
           data.gid = parseInt(this.state.updateDeviceGid);
-          data.gmtCreate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
-          data.gmtUpdate = date.getFullYear()+"-"+add((date.getMonth()+1))+"-"+add(date.getDate())+"T"+add(date.getHours())+":"+add(date.getMinutes())+":"+add(date.getSeconds())+"."+addmilli(date.getMilliseconds())+"+08:00";
+          data.gmtCreate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
+          data.gmtUpdate = date.getUTCFullYear()+"-"+add((date.getUTCMonth()+1))+"-"+add(date.getUTCDate())+"T"+add(date.getUTCHours())+":"+add(date.getUTCMinutes())+":"+add(date.getUTCSeconds())+"."+addmilli(date.getUTCMilliseconds())+"+00:00";
           data.imei = this.state.updateDeviceImei;
           data.imsi = this.state.updateDeviceImsi;
           data.licensePlate = this.state.updateDeviceLicensePlate;
@@ -385,8 +397,8 @@ class App extends React.Component {
                       obj.imei = element.imei;
                       obj.imsi = element.imsi;
                       obj.licensePlate = element.licensePlate;
-                      obj.lockStartTime = element.lockStartTime;
-                      obj.lockEndTime = element.lockEndTime;
+                      obj.lockStartTime = new Date(element.lockStartTime).getFullYear()+"-"+add((new Date(element.lockStartTime).getMonth()+1))+"-"+add(new Date(element.lockStartTime).getDate())+" "+add(new Date(element.lockStartTime).getHours())+":"+add(new Date(element.lockStartTime).getMinutes())+":"+add(new Date(element.lockStartTime).getSeconds());
+                      obj.lockEndTime = new Date(element.lockEndTime).getFullYear()+"-"+add((new Date(element.lockEndTime).getMonth()+1))+"-"+add(new Date(element.lockEndTime).getDate())+" "+add(new Date(element.lockEndTime).getHours())+":"+add(new Date(element.lockEndTime).getMinutes())+":"+add(new Date(element.lockEndTime).getSeconds());
                       obj.lockStatus = element.lockStatus;  
                       deviceInfoTableDataSource.push(obj);
                     });
@@ -483,8 +495,8 @@ class App extends React.Component {
                     obj.imei = element.imei;
                     obj.imsi = element.imsi;
                     obj.licensePlate = element.licensePlate;
-                    obj.lockStartTime = element.lockStartTime;
-                    obj.lockEndTime = element.lockEndTime;
+                    obj.lockStartTime = new Date(element.lockStartTime).getFullYear()+"-"+add((new Date(element.lockStartTime).getMonth()+1))+"-"+add(new Date(element.lockStartTime).getDate())+" "+add(new Date(element.lockStartTime).getHours())+":"+add(new Date(element.lockStartTime).getMinutes())+":"+add(new Date(element.lockStartTime).getSeconds());
+                    obj.lockEndTime = new Date(element.lockEndTime).getFullYear()+"-"+add((new Date(element.lockEndTime).getMonth()+1))+"-"+add(new Date(element.lockEndTime).getDate())+" "+add(new Date(element.lockEndTime).getHours())+":"+add(new Date(element.lockEndTime).getMinutes())+":"+add(new Date(element.lockEndTime).getSeconds());
                     obj.lockStatus = element.lockStatus;  
                     deviceInfoTableDataSource.push(obj);
                   });
@@ -683,7 +695,12 @@ class App extends React.Component {
                         placeholder="请选择上锁时间"
                         key={this.state.keyValue}
                         onChange={e => {
-                          this.setState({ addDeviceLockStartTime: e._d });
+                          if (e){ 
+                            this.setState({ addDeviceLockStartTime: e._d });
+                          }
+                          else {
+                            this.setState({ addDeviceLockStartTime: null });
+                          }
                         }}
                       />
                     </InputGroup>
@@ -699,7 +716,12 @@ class App extends React.Component {
                         placeholder="请选择解锁时间"
                         key={this.state.keyValue}
                         onChange={e => {
-                          this.setState({ addDeviceLockEndTime: e._d });
+                          if (e){
+                            this.setState({ addDeviceLockEndTime: e._d });
+                          }
+                          else {
+                            this.setState({ addDeviceLockEndTime: null });
+                          }
                         }}
                       />
                     </InputGroup>
@@ -833,7 +855,12 @@ class App extends React.Component {
                         placeholder={obj.lockStartTime}
                         key={this.state.keyValue}
                         onChange={e => {
-                          this.setState({ updateDeviceLockStartTime: e._d });
+                          if (e){
+                            this.setState({ updateDeviceLockStartTime: e._d });
+                          }
+                          else {
+                            this.setState({ updateDeviceLockStartTime: null });
+                          }
                         }}
                       />
                     </InputGroup>
@@ -849,7 +876,12 @@ class App extends React.Component {
                         placeholder={obj.lockEndTime}
                         key={this.state.keyValue}
                         onChange={e => {
-                          this.setState({ updateDeviceLockEndTime: e._d });
+                          if (e){
+                            this.setState({ updateDeviceLockEndTime: e._d });
+                          }
+                          else{
+                            this.setState({ updateDeviceLockEndTime: null });
+                          }
                         }}
                       />
                     </InputGroup>
