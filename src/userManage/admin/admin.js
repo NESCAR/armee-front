@@ -23,7 +23,6 @@ import {
 import "./admin.css";
 
 var obj={};
-var admins=[]; // 用于批量添加保存管理员数据
 var i=0;
 
 const { Content } = Layout;
@@ -34,6 +33,7 @@ const Uploader = () => {
     beforeUpload: file => {
       console.log(file.type);
       let data = [];// 存储获取到的数据
+      let admins=[]; // 用于批量添加保存管理员数据
       let i = 0;
       let flag = 0;
       const fileReader =new FileReader();
