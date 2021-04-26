@@ -34,6 +34,8 @@ const Uploader = () => {
     beforeUpload: file => {
       console.log(file.type);
       let data = [];// 存储获取到的数据
+      let i = 0;
+      let flag = 0;
       const fileReader =new FileReader();
       fileReader.readAsBinaryString(file);  //二进制
       fileReader.onload = event => {
@@ -46,6 +48,103 @@ const Uploader = () => {
             }
           }
         console.log(data);
+        while (data[i]){
+          if (!data[i].编号 ||
+              !data[i].姓名 ||
+              !data[i].区号 ||
+              !data[i].电话 ||
+              !data[i].邮箱 ||
+              !data[i].真实姓名 ||
+              !data[i].iccode ||
+              !data[i].密码 ||
+              !data[i].职位 ||
+              !data[i].员工gid
+            ){
+              message.error("文件不合法，请检查文件内容！");
+              flag = 1; // 不上传
+              break;
+            }
+          else {
+            admins[i] = new Object();
+            admins[i].authority = "admin";
+            admins[i].email = data[i].邮箱;
+            admins[i].icCode = data[i].iccode;
+            admins[i].name = data[i].姓名;
+            admins[i].no = data[i].编号;
+            admins[i].password = data[i].密码;
+            admins[i].position = data[i].职位;
+            admins[i].realName = data[i].真实姓名;
+            admins[i].staffGid = parseInt(data[i].员工gid);
+            admins[i].tel = data[i].电话;
+            admins[i].telArea = data[i].区号;
+            i++;
+          }
+        }
+        if (flag === 0 ){
+          console.log(admins);
+          addAdmins(admins).then(res => {
+            if (res === undefined){
+              message.error("The returned data was not retrieved!");
+              return;
+            }
+            else{
+              if (res.status === 201 || res.status === 200) {
+                message.success("添加成功！");
+                queryAdmin().then(res => {
+                  if (res === undefined){
+                    message.error("The returned data was not retrieved!");
+                    return;
+                  }
+                  else{
+                    if (res.status === 201 || res.status === 200) {
+                      let adminInfoTableDataSource = [];
+                      res.data.forEach(element => {
+                        let obj = {};
+                        obj.no = element.no;
+                        obj.name = element.name;
+                        obj.telArea = element.telArea;
+                        obj.tel = element.tel;
+                        obj.realName = element.realName;
+                        obj.email = element.email;
+                        obj.authority = element.authority;
+                        obj.icCode = element.icCode;
+                        obj.password = element.password;
+                        obj.position = element.position;
+                        obj.staffGid = element.staffGid;
+                        adminInfoTableDataSource.push(obj);
+                      });
+                      this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+                    } 
+                    else if (res.status === 401){
+                      message.error("Unauthorized, 获取管理员数据失败");
+                      return;
+                    }
+                    else if (res.status === 403){
+                      message.error("Forbidden, 获取管理员数据失败");
+                      return;
+                    }
+                    else {
+                      message.error("Not Found, 获取管理员数据失败");
+                      return;
+                    }
+                  }
+                });
+              } 
+              else if (res.status === 401){
+                message.error("Unauthorized, 批量添加失败");
+                return;
+              }
+              else if (res.status === 403){
+                message.error("Forbidden, 批量添加失败");
+                return;
+              }
+              else {
+                message.error("Not Found, 批量添加失败");
+                return;
+              }
+            }
+          });
+        }
         }catch (e) {
           message.error(`${file.name} is not an excel file`);
         return;
@@ -361,134 +460,6 @@ class App extends React.Component {
       addAdminPassword: null,
       addAdminPosition: null,
       addAdminStaffGid: null
-    });
-  };
-
-  // 批量添加管理员信息
-  addAdminsModalHandleOk = () => {
-    this.state.addAdminsAuthority = "admin"; // 默认权限为管理员
-    if (
-      !this.state.addAdminsNo  ||
-      !this.state.addAdminsName  ||
-      !this.state.addAdminsTelArea  ||
-      !this.state.addAdminsTel  ||
-      !this.state.addAdminsRealName  ||
-      !this.state.addAdminsEmail  ||
-      !this.state.addAdminsIcCode  ||
-      !this.state.addAdminsPassword  ||
-      !this.state.addAdminsPosition  ||
-      !this.state.addAdminsStaffGid 
-    ) {
-      message.error("请输入完整信息！");
-    } else {
-      admins[i]=new Object();
-      admins[i].authority = this.state.addAdminsAuthority;
-      admins[i].email = this.state.addAdminsEmail;
-      admins[i].icCode = this.state.addAdminsIcCode;
-      admins[i].name = this.state.addAdminsName;
-      admins[i].no = this.state.addAdminsNo;
-      admins[i].password = this.state.addAdminsPassword;
-      admins[i].position = this.state.addAdminsPosition;
-      admins[i].realName = this.state.addAdminsRealName;
-      admins[i].staffGid = parseInt(this.state.addAdminsStaffGid);
-      admins[i].tel = this.state.addAdminsTel;
-      admins[i].telArea = this.state.addAdminsTelArea;
-      //console.log(admins[i]);
-      // 窗口清空
-      this.setState({
-      addAdminsNo: null,
-      addAdminsName: null,
-      addAdminsTelArea: null,
-      addAdminsTel: null,
-      addAdminsRealName: null,
-      addAdminsEmail: null,
-      addAdminsAuthority: null,
-      addAdminsIcCode: null,
-      addAdminsPassword: null,
-      addAdminsPosition: null,
-      addAdminsStaffGid: null
-    });
-    }
-  };
-
-  // 取消批量添加管理员，变量清零并将数据上传
-  addAdminsModalHandleCancel = () => {
-    this.setState({ addAdminsModalVisible: false });
-    this.setState({
-      addAdminsNo: null,
-      addAdminsName: null,
-      addAdminsTelArea: null,
-      addAdminsTel: null,
-      addAdminsRealName: null,
-      addAdminsEmail: null,
-      addAdminsAuthority: null,
-      addAdminsIcCode: null,
-      addAdminsPassword: null,
-      addAdminsPosition: null,
-      addAdminsStaffGid: null
-    });
-    //console.log(admins);
-    addAdmins(admins).then(res => {
-      if (res === undefined){
-        message.error("The returned data was not retrieved!");
-        return;
-      }
-      else{
-        if (res.status === 201 || res.status === 200) {
-          message.success("添加成功！");
-          queryAdmin().then(res => {
-            if (res === undefined){
-              message.error("The returned data was not retrieved!");
-              return;
-            }
-            else{
-              if (res.status === 201 || res.status === 200) {
-                let adminInfoTableDataSource = [];
-                res.data.forEach(element => {
-                  let obj = {};
-                  obj.no = element.no;
-                  obj.name = element.name;
-                  obj.telArea = element.telArea;
-                  obj.tel = element.tel;
-                  obj.realName = element.realName;
-                  obj.email = element.email;
-                  obj.authority = element.authority;
-                  obj.icCode = element.icCode;
-                  obj.password = element.password;
-                  obj.position = element.position;
-                  obj.staffGid = element.staffGid;
-                  adminInfoTableDataSource.push(obj);
-                });
-                this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-              } 
-              else if (res.status === 401){
-                message.error("Unauthorized, 获取管理员数据失败");
-                return;
-              }
-              else if (res.status === 403){
-                message.error("Forbidden, 获取管理员数据失败");
-                return;
-              }
-              else {
-                message.error("Not Found, 获取管理员数据失败");
-                return;
-              }
-            }
-          });
-        } 
-        else if (res.status === 401){
-          message.error("Unauthorized, 批量添加失败");
-          return;
-        }
-        else if (res.status === 403){
-          message.error("Forbidden, 批量添加失败");
-          return;
-        }
-        else {
-          message.error("Not Found, 批量添加失败");
-          return;
-        }
-      }
     });
   };
 
@@ -932,192 +903,6 @@ class App extends React.Component {
                       value={this.state.addAdminStaffGid}
                       onChange={e => {
                         this.setState({ addAdminStaffGid: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                </Modal>
-              </div>
-              <div id="addAdmins">
-                <Modal
-                  title="批量添加管理员"
-                  visible={this.state.addAdminsModalVisible}
-                  onOk={this.addAdminsModalHandleOk}
-                  onCancel={this.addAdminsModalHandleCancel}
-                  cancelText="取消"
-                  okText="确定"
-                >
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="编号"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入编号"
-                      value={this.state.addAdminsNo}
-                      onChange={e => {
-                        this.setState({ addAdminsNo: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="姓名"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入姓名"
-                      value={this.state.addAdminsName}
-                      onChange={e => {
-                        this.setState({ addAdminsName: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="区号"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入区号"
-                      value={this.state.addAdminsTelArea}
-                      onChange={e => {
-                        this.setState({ addAdminsTelArea: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="电话"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入电话"
-                      value={this.state.addAdminsTel}
-                      onChange={e => {
-                        this.setState({ addAdminsTel: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="真实姓名"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入真实姓名"
-                      value={this.state.addAdminsRealName}
-                      onChange={e => {
-                        this.setState({ addAdminsRealName: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="邮箱"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入邮箱"
-                      value={this.state.addAdminsEmail}
-                      onChange={e => {
-                        this.setState({ addAdminsEmail: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="权限"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      defaultValue="管理员"
-                      disabled={true}
-                      className="inputTitle"
-                      
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="icCode"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入icCode"
-                      value={this.state.addAdminsIcCode}
-                      onChange={e => {
-                        this.setState({ addAdminsIcCode: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="密码"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入密码"
-                      value={this.state.addAdminsPassword}
-                      onChange={e => {
-                        this.setState({ addAdminsPassword: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="职位"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入职位"
-                      value={this.state.addAdminsPosition}
-                      onChange={e => {
-                        this.setState({ addAdminsPosition: e.target.value });
-                      }}
-                    />
-                  </InputGroup>
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: "20%" }}
-                      defaultValue="员工Gid"
-                      disabled={true}
-                      className="inputTitle"
-                    />
-                    <Input
-                      style={{ width: "80%" }}
-                      placeholder="请输入员工Gid"
-                      value={this.state.addAdminsStaffGid}
-                      onChange={e => {
-                        this.setState({ addAdminsStaffGid: e.target.value });
                       }}
                     />
                   </InputGroup>
