@@ -31,15 +31,18 @@ const InputGroup = Input.Group;
 const Uploader = () => {
   const props = {
     beforeUpload: file => {
-      console.log(file.type);
-      let data = [];// 存储获取到的数据
-      let admins=[]; // 用于批量添加保存管理员数据
-      let i = 0;
-      let flag = 0;
-      const fileReader =new FileReader();
-      fileReader.readAsBinaryString(file);  //二进制
-      fileReader.onload = event => {
-        try {
+      if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type !== "application/vnd.ms-excel" ){
+        message.error(`${file.name} is not an excel file`);
+        return;
+      }
+      else {
+        let data = [];// 存储获取到的数据
+        let admins=[]; // 用于批量添加保存管理员数据
+        let i = 0;
+        let flag = 0;
+        const fileReader = new FileReader();
+        fileReader.readAsBinaryString(file);  //二进制
+        fileReader.onload = event => {
           const {result } = event.target;
           const workbook = XLSX.read(result, {type:'binary' });
           for (const sheet in workbook.Sheets) {
@@ -47,107 +50,104 @@ const Uploader = () => {
               data =data.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
             }
           }
-        console.log(data);
-        while (data[i]){
-          if (!data[i].编号 ||
-              !data[i].姓名 ||
-              !data[i].区号 ||
-              !data[i].电话 ||
-              !data[i].邮箱 ||
-              !data[i].真实姓名 ||
-              !data[i].iccode ||
-              !data[i].密码 ||
-              !data[i].职位 ||
-              !data[i].员工gid
-            ){
-              message.error("文件不合法，请检查文件内容！");
-              flag = 1; // 不上传
-              break;
+          console.log(data);
+          while (data[i]){
+            if (!data[i].编号 ||
+                !data[i].姓名 ||
+                !data[i].区号 ||
+                !data[i].电话 ||
+                !data[i].邮箱 ||
+                !data[i].真实姓名 ||
+                !data[i].iccode ||
+                !data[i].密码 ||
+                !data[i].职位 ||
+                !data[i].员工gid
+              ){
+                message.error("文件不合法，请检查文件内容！");
+                flag = 1; // 不上传
+                break;
+              }
+            else {
+              admins[i] = new Object();
+              admins[i].authority = "admin";
+              admins[i].email = data[i].邮箱;
+              admins[i].icCode = data[i].iccode;
+              admins[i].name = data[i].姓名;
+              admins[i].no = data[i].编号;
+              admins[i].password = data[i].密码;
+              admins[i].position = data[i].职位;
+              admins[i].realName = data[i].真实姓名;
+              admins[i].staffGid = parseInt(data[i].员工gid);
+              admins[i].tel = data[i].电话;
+              admins[i].telArea = data[i].区号;
+              i++;
             }
-          else {
-            admins[i] = new Object();
-            admins[i].authority = "admin";
-            admins[i].email = data[i].邮箱;
-            admins[i].icCode = data[i].iccode;
-            admins[i].name = data[i].姓名;
-            admins[i].no = data[i].编号;
-            admins[i].password = data[i].密码;
-            admins[i].position = data[i].职位;
-            admins[i].realName = data[i].真实姓名;
-            admins[i].staffGid = parseInt(data[i].员工gid);
-            admins[i].tel = data[i].电话;
-            admins[i].telArea = data[i].区号;
-            i++;
           }
-        }
-        if (flag === 0 ){
-          console.log(admins);
-          addAdmins(admins).then(res => {
-            if (res === undefined){
-              message.error("The returned data was not retrieved!");
-              return;
-            }
-            else{
-              if (res.status === 201 || res.status === 200) {
-                message.success("添加成功！");
-                queryAdmin().then(res => {
-                  if (res === undefined){
-                    message.error("The returned data was not retrieved!");
-                    return;
-                  }
-                  else{
-                    if (res.status === 201 || res.status === 200) {
-                      let adminInfoTableDataSource = [];
-                      res.data.forEach(element => {
-                        let obj = {};
-                        obj.no = element.no;
-                        obj.name = element.name;
-                        obj.telArea = element.telArea;
-                        obj.tel = element.tel;
-                        obj.realName = element.realName;
-                        obj.email = element.email;
-                        obj.authority = element.authority;
-                        obj.icCode = element.icCode;
-                        obj.password = element.password;
-                        obj.position = element.position;
-                        obj.staffGid = element.staffGid;
-                        adminInfoTableDataSource.push(obj);
-                      });
-                      this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
-                    } 
-                    else if (res.status === 401){
-                      message.error("Unauthorized, 获取管理员数据失败");
-                      return;
-                    }
-                    else if (res.status === 403){
-                      message.error("Forbidden, 获取管理员数据失败");
-                      return;
-                    }
-                    else {
-                      message.error("Not Found, 获取管理员数据失败");
-                      return;
-                    }
-                  }
-                });
-              } 
-              else if (res.status === 401){
-                message.error("Unauthorized, 批量添加失败");
+          if (flag === 0 ){
+            console.log(admins);
+            addAdmins(admins).then(res => {
+              if (res === undefined){
+                message.error("The returned data was not retrieved!");
                 return;
               }
-              else if (res.status === 403){
-                message.error("Forbidden, 批量添加失败");
-                return;
+              else{
+                if (res.status === 201 || res.status === 200) {
+                  message.success("添加成功！");
+                  queryAdmin().then(res => {
+                    if (res === undefined){
+                      message.error("The returned data was not retrieved!");
+                      return;
+                    }
+                    else{
+                      if (res.status === 201 || res.status === 200) {
+                        let adminInfoTableDataSource = [];
+                        res.data.forEach(element => {
+                          let obj = {};
+                          obj.no = element.no;
+                          obj.name = element.name;
+                          obj.telArea = element.telArea;
+                          obj.tel = element.tel;
+                          obj.realName = element.realName;
+                          obj.email = element.email;
+                          obj.authority = element.authority;
+                          obj.icCode = element.icCode;
+                          obj.password = element.password;
+                          obj.position = element.position;
+                          obj.staffGid = element.staffGid;
+                          adminInfoTableDataSource.push(obj);
+                        });
+                        this.setState({ adminInfoTableDataSource: adminInfoTableDataSource });
+                      } 
+                      else if (res.status === 401){
+                        message.error("Unauthorized, 获取管理员数据失败");
+                        return;
+                      }
+                      else if (res.status === 403){
+                        message.error("Forbidden, 获取管理员数据失败");
+                        return;
+                      }
+                      else {
+                        message.error("Not Found, 获取管理员数据失败");
+                        return;
+                      }
+                    }
+                  });
+                } 
+                else if (res.status === 401){
+                  message.error("Unauthorized, 批量添加失败");
+                  return;
+                }
+                else if (res.status === 403){
+                  message.error("Forbidden, 批量添加失败");
+                  return;
+                }
+                else {
+                  message.error("Not Found, 批量添加失败");
+                  return;
+                }
               }
-              else {
-                message.error("Not Found, 批量添加失败");
-                return;
-              }
-            }
-          });
-        }
-        }catch (e) {
-          message.error(`${file.name} is not an excel file`);
-        return;
+            });
+          }
         }
       };
     },
