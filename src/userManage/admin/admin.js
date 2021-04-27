@@ -31,7 +31,8 @@ const InputGroup = Input.Group;
 const Uploader = () => {
   const props = {
     beforeUpload: file => {
-      if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || file.type !== "application/vnd.ms-excel" ){
+      console.log(file.type);
+      if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && file.type !== "application/vnd.ms-excel" ){
         message.error(`${file.name} is not an excel file`);
         return;
       }
