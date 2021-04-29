@@ -130,7 +130,7 @@ class App extends React.Component {
   componentDidMount() {
     // 获取汽车数据
     queryDevice().then(res => {
-        if (res === undefined){
+      if (res === undefined){
         message.error("The returned data was not retrieved!");
       }
       else{
@@ -346,7 +346,7 @@ class App extends React.Component {
           data.lockStatus = parseInt(this.state.updateDeviceLockStatus);
           data.psw = this.state.updateDevicePsw;
         }
-        else if ((this.state.updateDeviceLockStartTime[4] === '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockEndTime != null) || this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockStartTime === null && this.state.updateDeviceLockEndTime !== null ){
+        else if ((this.state.updateDeviceLockStartTime[4] === '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockEndTime != null) || (this.state.updateDeviceLockStartTime[4] !== '-' && this.state.updateDeviceLockEndTime[4] !== '-' && this.state.updateDeviceLockStartTime === null && this.state.updateDeviceLockEndTime !== null) ){
           let date = new Date();
           let endTime = this.state.updateDeviceLockEndTime;
           data.driverGid = parseInt(this.state.updateDeviceDriverGid);

@@ -23,7 +23,6 @@ import {
 import "./admin.css";
 
 var obj={};
-var i=0;
 
 const { Content } = Layout;
 const InputGroup = Input.Group;

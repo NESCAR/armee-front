@@ -3,9 +3,16 @@ import './App.css';
 import {
   Layout,
   Menu,
-  Icon,
   message,
 } from "antd";
+import {
+  SmileOutlined,
+  HomeOutlined,
+  SettingOutlined,
+  FileTextOutlined,
+  UserOutlined,
+  SwapLeftOutlined,
+} from '@ant-design/icons';
 
 import { Route, Switch, Link } from 'react-router-dom';
 import carStart from "./carStart/carStart";
@@ -69,26 +76,26 @@ export default class App extends Component {
         >
           <Menu theme="dark" mode="inline" defaultSelectedKeys={[this.state.menuKey]}>
             <Menu.Item key="admin" disabled={true}>
-              <Icon type="smile-o" />
+              <SmileOutlined />
               <span>您好，{localStorage.getItem("userID")}</span>
             </Menu.Item>
             {/* 根据用户类型，判断是否显示各个标签 */}
             <Menu.Item key="/app" >
               <Link to="/app">
-                <Icon type="home" />
+                <HomeOutlined />
                 <span>首页</span>
               </Link>
             </Menu.Item>
             <Menu.Item key="/app/carControl"> { /* style={{ display: (role === 'ROLE_ADMIN' || role == 'ROLE_SUPER_ADMIN') ? 'block' : 'none'}}> */}
               <Link to="/app/carControl">
-                <Icon type="setting" />
+                <SettingOutlined />
                 <span>汽车控制</span>
               </Link>
             </Menu.Item>
             <SubMenu 
               title={
                 <span>
-                  <Icon type="file" />
+                  <FileTextOutlined />
                   <span>汽车信息</span>
                   </span>
               }>
@@ -108,7 +115,7 @@ export default class App extends Component {
             <SubMenu 
               title={
                 <span>
-                  <Icon type="user" />
+                  <UserOutlined />
                   <span>用户管理</span>
                 </span>
               }>
@@ -126,7 +133,7 @@ export default class App extends Component {
             </SubMenu>
             <Menu.Item key="log_off">
               <span onClick={this.log_off}>
-                <Icon type="swap-left" />
+                <SwapLeftOutlined />
                 <span>退出登陆</span>
               </span>
             </Menu.Item>
